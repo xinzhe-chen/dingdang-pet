@@ -1,0 +1,13 @@
+.DS_Store
+.build/
+build/
+dist/
+DerivedData/
+*.xcarchive
+*.dmg
+*.zip
+.swiftpm/
+.content-signing-key
+*.p12
+notary-log.json
+Artifacts/

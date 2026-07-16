@@ -1,0 +1,758 @@
+{
+  "catalogVersion" : "1.0.0",
+  "defaultPetID" : "dingdang",
+  "pets" : [
+    {
+      "animations" : {
+        "failed" : {
+          "frames" : [
+            {
+              "atlas" : "main",
+              "column" : 0,
+              "durationMs" : 140,
+              "row" : 5
+            },
+            {
+              "atlas" : "main",
+              "column" : 1,
+              "durationMs" : 140,
+              "row" : 5
+            },
+            {
+              "atlas" : "main",
+              "column" : 2,
+              "durationMs" : 140,
+              "row" : 5
+            },
+            {
+              "atlas" : "main",
+              "column" : 3,
+              "durationMs" : 140,
+              "row" : 5
+            },
+            {
+              "atlas" : "main",
+              "column" : 4,
+              "durationMs" : 140,
+              "row" : 5
+            },
+            {
+              "atlas" : "main",
+              "column" : 5,
+              "durationMs" : 140,
+              "row" : 5
+            },
+            {
+              "atlas" : "main",
+              "column" : 6,
+              "durationMs" : 140,
+              "row" : 5
+            },
+            {
+              "atlas" : "main",
+              "column" : 7,
+              "durationMs" : 240,
+              "row" : 5
+            }
+          ],
+          "loop" : false
+        },
+        "idle" : {
+          "frames" : [
+            {
+              "atlas" : "main",
+              "column" : 0,
+              "durationMs" : 280,
+              "row" : 0
+            },
+            {
+              "atlas" : "main",
+              "column" : 1,
+              "durationMs" : 110,
+              "row" : 0
+            },
+            {
+              "atlas" : "main",
+              "column" : 2,
+              "durationMs" : 110,
+              "row" : 0
+            },
+            {
+              "atlas" : "main",
+              "column" : 3,
+              "durationMs" : 140,
+              "row" : 0
+            },
+            {
+              "atlas" : "main",
+              "column" : 4,
+              "durationMs" : 140,
+              "row" : 0
+            },
+            {
+              "atlas" : "main",
+              "column" : 5,
+              "durationMs" : 320,
+              "row" : 0
+            }
+          ],
+          "loop" : true
+        },
+        "jumping" : {
+          "frames" : [
+            {
+              "atlas" : "main",
+              "column" : 0,
+              "durationMs" : 140,
+              "row" : 4
+            },
+            {
+              "atlas" : "main",
+              "column" : 1,
+              "durationMs" : 140,
+              "row" : 4
+            },
+            {
+              "atlas" : "main",
+              "column" : 2,
+              "durationMs" : 140,
+              "row" : 4
+            },
+            {
+              "atlas" : "main",
+              "column" : 3,
+              "durationMs" : 140,
+              "row" : 4
+            },
+            {
+              "atlas" : "main",
+              "column" : 4,
+              "durationMs" : 280,
+              "row" : 4
+            }
+          ],
+          "loop" : false
+        },
+        "look-000" : {
+          "frames" : [
+            {
+              "atlas" : "main",
+              "column" : 0,
+              "row" : 9
+            }
+          ],
+          "loop" : true
+        },
+        "look-1125" : {
+          "frames" : [
+            {
+              "atlas" : "main",
+              "column" : 5,
+              "row" : 9
+            }
+          ],
+          "loop" : true
+        },
+        "look-1350" : {
+          "frames" : [
+            {
+              "atlas" : "main",
+              "column" : 6,
+              "row" : 9
+            }
+          ],
+          "loop" : true
+        },
+        "look-1575" : {
+          "frames" : [
+            {
+              "atlas" : "main",
+              "column" : 7,
+              "row" : 9
+            }
+          ],
+          "loop" : true
+        },
+        "look-1800" : {
+          "frames" : [
+            {
+              "atlas" : "main",
+              "column" : 0,
+              "row" : 10
+            }
+          ],
+          "loop" : true
+        },
+        "look-2025" : {
+          "frames" : [
+            {
+              "atlas" : "main",
+              "column" : 1,
+              "row" : 10
+            }
+          ],
+          "loop" : true
+        },
+        "look-225" : {
+          "frames" : [
+            {
+              "atlas" : "main",
+              "column" : 1,
+              "row" : 9
+            }
+          ],
+          "loop" : true
+        },
+        "look-2250" : {
+          "frames" : [
+            {
+              "atlas" : "main",
+              "column" : 2,
+              "row" : 10
+            }
+          ],
+          "loop" : true
+        },
+        "look-2475" : {
+          "frames" : [
+            {
+              "atlas" : "main",
+              "column" : 3,
+              "row" : 10
+            }
+          ],
+          "loop" : true
+        },
+        "look-2700" : {
+          "frames" : [
+            {
+              "atlas" : "main",
+              "column" : 4,
+              "row" : 10
+            }
+          ],
+          "loop" : true
+        },
+        "look-2925" : {
+          "frames" : [
+            {
+              "atlas" : "main",
+              "column" : 5,
+              "row" : 10
+            }
+          ],
+          "loop" : true
+        },
+        "look-3150" : {
+          "frames" : [
+            {
+              "atlas" : "main",
+              "column" : 6,
+              "row" : 10
+            }
+          ],
+          "loop" : true
+        },
+        "look-3375" : {
+          "frames" : [
+            {
+              "atlas" : "main",
+              "column" : 7,
+              "row" : 10
+            }
+          ],
+          "loop" : true
+        },
+        "look-450" : {
+          "frames" : [
+            {
+              "atlas" : "main",
+              "column" : 2,
+              "row" : 9
+            }
+          ],
+          "loop" : true
+        },
+        "look-675" : {
+          "frames" : [
+            {
+              "atlas" : "main",
+              "column" : 3,
+              "row" : 9
+            }
+          ],
+          "loop" : true
+        },
+        "look-900" : {
+          "frames" : [
+            {
+              "atlas" : "main",
+              "column" : 4,
+              "row" : 9
+            }
+          ],
+          "loop" : true
+        },
+        "review" : {
+          "frames" : [
+            {
+              "atlas" : "main",
+              "column" : 0,
+              "durationMs" : 150,
+              "row" : 8
+            },
+            {
+              "atlas" : "main",
+              "column" : 1,
+              "durationMs" : 150,
+              "row" : 8
+            },
+            {
+              "atlas" : "main",
+              "column" : 2,
+              "durationMs" : 150,
+              "row" : 8
+            },
+            {
+              "atlas" : "main",
+              "column" : 3,
+              "durationMs" : 150,
+              "row" : 8
+            },
+            {
+              "atlas" : "main",
+              "column" : 4,
+              "durationMs" : 150,
+              "row" : 8
+            },
+            {
+              "atlas" : "main",
+              "column" : 5,
+              "durationMs" : 280,
+              "row" : 8
+            }
+          ],
+          "loop" : true
+        },
+        "running" : {
+          "frames" : [
+            {
+              "atlas" : "main",
+              "column" : 0,
+              "durationMs" : 120,
+              "row" : 7
+            },
+            {
+              "atlas" : "main",
+              "column" : 1,
+              "durationMs" : 120,
+              "row" : 7
+            },
+            {
+              "atlas" : "main",
+              "column" : 2,
+              "durationMs" : 120,
+              "row" : 7
+            },
+            {
+              "atlas" : "main",
+              "column" : 3,
+              "durationMs" : 120,
+              "row" : 7
+            },
+            {
+              "atlas" : "main",
+              "column" : 4,
+              "durationMs" : 120,
+              "row" : 7
+            },
+            {
+              "atlas" : "main",
+              "column" : 5,
+              "durationMs" : 220,
+              "row" : 7
+            }
+          ],
+          "loop" : true
+        },
+        "running-left" : {
+          "frames" : [
+            {
+              "atlas" : "main",
+              "column" : 0,
+              "durationMs" : 120,
+              "row" : 2
+            },
+            {
+              "atlas" : "main",
+              "column" : 1,
+              "durationMs" : 120,
+              "row" : 2
+            },
+            {
+              "atlas" : "main",
+              "column" : 2,
+              "durationMs" : 120,
+              "row" : 2
+            },
+            {
+              "atlas" : "main",
+              "column" : 3,
+              "durationMs" : 120,
+              "row" : 2
+            },
+            {
+              "atlas" : "main",
+              "column" : 4,
+              "durationMs" : 120,
+              "row" : 2
+            },
+            {
+              "atlas" : "main",
+              "column" : 5,
+              "durationMs" : 120,
+              "row" : 2
+            },
+            {
+              "atlas" : "main",
+              "column" : 6,
+              "durationMs" : 120,
+              "row" : 2
+            },
+            {
+              "atlas" : "main",
+              "column" : 7,
+              "durationMs" : 220,
+              "row" : 2
+            }
+          ],
+          "loop" : true
+        },
+        "running-right" : {
+          "frames" : [
+            {
+              "atlas" : "main",
+              "column" : 0,
+              "durationMs" : 120,
+              "row" : 1
+            },
+            {
+              "atlas" : "main",
+              "column" : 1,
+              "durationMs" : 120,
+              "row" : 1
+            },
+            {
+              "atlas" : "main",
+              "column" : 2,
+              "durationMs" : 120,
+              "row" : 1
+            },
+            {
+              "atlas" : "main",
+              "column" : 3,
+              "durationMs" : 120,
+              "row" : 1
+            },
+            {
+              "atlas" : "main",
+              "column" : 4,
+              "durationMs" : 120,
+              "row" : 1
+            },
+            {
+              "atlas" : "main",
+              "column" : 5,
+              "durationMs" : 120,
+              "row" : 1
+            },
+            {
+              "atlas" : "main",
+              "column" : 6,
+              "durationMs" : 120,
+              "row" : 1
+            },
+            {
+              "atlas" : "main",
+              "column" : 7,
+              "durationMs" : 220,
+              "row" : 1
+            }
+          ],
+          "loop" : true
+        },
+        "waiting" : {
+          "frames" : [
+            {
+              "atlas" : "main",
+              "column" : 0,
+              "durationMs" : 150,
+              "row" : 6
+            },
+            {
+              "atlas" : "main",
+              "column" : 1,
+              "durationMs" : 150,
+              "row" : 6
+            },
+            {
+              "atlas" : "main",
+              "column" : 2,
+              "durationMs" : 150,
+              "row" : 6
+            },
+            {
+              "atlas" : "main",
+              "column" : 3,
+              "durationMs" : 150,
+              "row" : 6
+            },
+            {
+              "atlas" : "main",
+              "column" : 4,
+              "durationMs" : 150,
+              "row" : 6
+            },
+            {
+              "atlas" : "main",
+              "column" : 5,
+              "durationMs" : 260,
+              "row" : 6
+            }
+          ],
+          "loop" : true
+        },
+        "waving" : {
+          "frames" : [
+            {
+              "atlas" : "main",
+              "column" : 0,
+              "durationMs" : 140,
+              "row" : 3
+            },
+            {
+              "atlas" : "main",
+              "column" : 1,
+              "durationMs" : 140,
+              "row" : 3
+            },
+            {
+              "atlas" : "main",
+              "column" : 2,
+              "durationMs" : 140,
+              "row" : 3
+            },
+            {
+              "atlas" : "main",
+              "column" : 3,
+              "durationMs" : 280,
+              "row" : 3
+            }
+          ],
+          "loop" : false
+        }
+      },
+      "atlases" : [
+        {
+          "file" : "pets\/dingdang\/spritesheet.png",
+          "filtering" : "nearest",
+          "id" : "main",
+          "layout" : {
+            "cellHeight" : 208,
+            "cellWidth" : 192,
+            "columns" : 8,
+            "margin" : 0,
+            "rows" : 11,
+            "spacing" : 0,
+            "type" : "grid"
+          }
+        }
+      ],
+      "author" : "Dingdang Pet",
+      "behaviors" : {
+        "longPress" : {
+          "animation" : "waiting",
+          "type" : "play"
+        },
+        "primaryClick" : {
+          "choices" : [
+            {
+              "run" : {
+                "animation" : "waving",
+                "type" : "play"
+              },
+              "weight" : 70
+            },
+            {
+              "run" : {
+                "animation" : "jumping",
+                "type" : "play"
+              },
+              "weight" : 30
+            }
+          ],
+          "type" : "random"
+        },
+        "randomIdle" : {
+          "choices" : [
+            {
+              "run" : {
+                "animation" : "waving",
+                "type" : "play"
+              },
+              "weight" : 45
+            },
+            {
+              "run" : {
+                "animation" : "review",
+                "type" : "play"
+              },
+              "weight" : 30
+            },
+            {
+              "run" : {
+                "animation" : "running",
+                "type" : "play"
+              },
+              "weight" : 25
+            }
+          ],
+          "type" : "random"
+        },
+        "secondaryClick" : {
+          "steps" : [
+            {
+              "animation" : "jumping",
+              "type" : "play"
+            },
+            {
+              "durationMs" : 100,
+              "type" : "wait"
+            },
+            {
+              "animation" : "waving",
+              "type" : "play"
+            }
+          ],
+          "type" : "sequence"
+        }
+      },
+      "bindings" : {
+        "defaultIdle" : "idle",
+        "longPress" : "waiting",
+        "moveLeft" : "running-left",
+        "moveRight" : "running-right",
+        "primaryClick" : "waving",
+        "secondaryClick" : "jumping"
+      },
+      "description" : "Codex Pet v2 compatible animated pet",
+      "directionalLook" : {
+        "angles" : [
+          {
+            "animation" : "look-000",
+            "degrees" : 0
+          },
+          {
+            "animation" : "look-225",
+            "degrees" : 22.5
+          },
+          {
+            "animation" : "look-450",
+            "degrees" : 45
+          },
+          {
+            "animation" : "look-675",
+            "degrees" : 67.5
+          },
+          {
+            "animation" : "look-900",
+            "degrees" : 90
+          },
+          {
+            "animation" : "look-1125",
+            "degrees" : 112.5
+          },
+          {
+            "animation" : "look-1350",
+            "degrees" : 135
+          },
+          {
+            "animation" : "look-1575",
+            "degrees" : 157.5
+          },
+          {
+            "animation" : "look-1800",
+            "degrees" : 180
+          },
+          {
+            "animation" : "look-2025",
+            "degrees" : 202.5
+          },
+          {
+            "animation" : "look-2250",
+            "degrees" : 225
+          },
+          {
+            "animation" : "look-2475",
+            "degrees" : 247.5
+          },
+          {
+            "animation" : "look-2700",
+            "degrees" : 270
+          },
+          {
+            "animation" : "look-2925",
+            "degrees" : 292.5
+          },
+          {
+            "animation" : "look-3150",
+            "degrees" : 315
+          },
+          {
+            "animation" : "look-3375",
+            "degrees" : 337.5
+          }
+        ],
+        "deadzoneRadius" : 90,
+        "enabled" : true,
+        "selection" : "nearest-angle"
+      },
+      "displayName" : "Dingdang",
+      "format" : "codex-pet-v2",
+      "id" : "dingdang",
+      "presentation" : {
+        "desktop" : {
+          "anchorX" : 0.5,
+          "anchorY" : 0.05,
+          "defaultScale" : 0.55,
+          "height" : 208,
+          "maximumScale" : 2.5,
+          "minimumScale" : 0.2
+        },
+        "menuBar" : {
+          "avoidNotch" : true,
+          "height" : 22,
+          "pauseInterval" : {
+            "max" : 5,
+            "min" : 1.5
+          },
+          "safeMarginLeft" : 90,
+          "safeMarginRight" : 230,
+          "speed" : 34
+        },
+        "randomIdleInterval" : {
+          "max" : 24,
+          "min" : 9
+        }
+      },
+      "requiredCapabilities" : [
+        "desktop-pet",
+        "menu-bar-roaming",
+        "pointer-look",
+        "behavior-graph"
+      ],
+      "version" : "1.0.0"
+    }
+  ],
+  "schemaVersion" : 1
+}

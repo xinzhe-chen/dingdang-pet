@@ -1,0 +1,108 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://dingdang.pet/schemas/catalog-v1.schema.json",
+  "title": "Dingdang Pet Catalog v1",
+  "type": "object",
+  "required": ["schemaVersion", "catalogVersion", "defaultPetID", "pets"],
+  "properties": {
+    "schemaVersion": { "const": 1 },
+    "catalogVersion": { "type": "string", "minLength": 1 },
+    "defaultPetID": { "type": "string", "minLength": 1 },
+    "pets": {
+      "type": "array",
+      "minItems": 1,
+      "maxItems": 128,
+      "items": { "$ref": "#/$defs/pet" }
+    }
+  },
+  "additionalProperties": false,
+  "$defs": {
+    "frameRect": {
+      "type": "object",
+      "required": ["x", "y", "width", "height"],
+      "properties": {
+        "x": { "type": "integer", "minimum": 0 },
+        "y": { "type": "integer", "minimum": 0 },
+        "width": { "type": "integer", "minimum": 1 },
+        "height": { "type": "integer", "minimum": 1 }
+      },
+      "additionalProperties": false
+    },
+    "atlas": {
+      "type": "object",
+      "required": ["id", "file", "layout"],
+      "properties": {
+        "id": { "type": "string", "minLength": 1 },
+        "file": { "type": "string", "minLength": 1 },
+        "filtering": { "enum": ["nearest", "linear"] },
+        "layout": {
+          "type": "object",
+          "required": ["type"],
+          "properties": {
+            "type": { "enum": ["grid", "rects"] },
+            "columns": { "type": "integer", "minimum": 1 },
+            "rows": { "type": "integer", "minimum": 1 },
+            "cellWidth": { "type": "integer", "minimum": 1 },
+            "cellHeight": { "type": "integer", "minimum": 1 },
+            "spacing": { "type": "integer", "minimum": 0 },
+            "margin": { "type": "integer", "minimum": 0 },
+            "frames": { "type": "object", "additionalProperties": { "$ref": "#/$defs/frameRect" } }
+          },
+          "additionalProperties": false
+        }
+      },
+      "additionalProperties": false
+    },
+    "animationFrame": {
+      "type": "object",
+      "required": ["atlas"],
+      "properties": {
+        "atlas": { "type": "string" },
+        "row": { "type": "integer", "minimum": 0 },
+        "column": { "type": "integer", "minimum": 0 },
+        "name": { "type": "string" },
+        "durationMs": { "type": "integer", "minimum": 1 },
+        "offsetX": { "type": "number" },
+        "offsetY": { "type": "number" },
+        "scale": { "type": "number", "exclusiveMinimum": 0 },
+        "flipX": { "type": "boolean" }
+      },
+      "additionalProperties": false
+    },
+    "animation": {
+      "type": "object",
+      "required": ["frames"],
+      "properties": {
+        "frames": { "type": "array", "minItems": 1, "maxItems": 4096, "items": { "$ref": "#/$defs/animationFrame" } },
+        "fps": { "type": "number", "exclusiveMinimum": 0, "maximum": 60 },
+        "loop": { "type": "boolean" },
+        "loopCount": { "type": "integer", "minimum": 1, "maximum": 1000 },
+        "playback": { "enum": ["forward", "reverse", "pingPong"] },
+        "priority": { "type": "integer" },
+        "interruptible": { "type": "boolean" }
+      },
+      "additionalProperties": false
+    },
+    "pet": {
+      "type": "object",
+      "required": ["id", "displayName", "version", "format", "requiredCapabilities", "atlases", "animations", "bindings", "behaviors", "presentation"],
+      "properties": {
+        "id": { "type": "string", "minLength": 1 },
+        "displayName": { "type": "string", "minLength": 1 },
+        "description": { "type": "string" },
+        "author": { "type": "string" },
+        "version": { "type": "string", "minLength": 1 },
+        "format": { "enum": ["dingdang-pet-v1", "codex-pet-v2"] },
+        "requiredCapabilities": { "type": "array", "items": { "type": "string" } },
+        "atlases": { "type": "array", "minItems": 1, "maxItems": 32, "items": { "$ref": "#/$defs/atlas" } },
+        "animations": { "type": "object", "minProperties": 1, "maxProperties": 512, "additionalProperties": { "$ref": "#/$defs/animation" } },
+        "bindings": { "type": "object", "required": ["defaultIdle"], "additionalProperties": { "type": "string" } },
+        "behaviors": { "type": "object" },
+        "directionalLook": { "type": "object" },
+        "presentation": { "type": "object" },
+        "sounds": { "type": "object" }
+      },
+      "additionalProperties": false
+    }
+  }
+}

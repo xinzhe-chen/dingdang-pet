@@ -1,0 +1,17 @@
+name: Validate
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  test:
+    runs-on: macos-15
+    steps:
+      - uses: actions/checkout@v4
+      - name: Run unit tests
+        run: swift test --disable-sandbox
+      - name: Validate bundled catalog
+        run: swift run --disable-sandbox dingdang-pet-tool validate Sources/DingdangPetApp/Resources/DefaultCatalog
+      - name: Build app bundle
+        run: scripts/build-app.sh
