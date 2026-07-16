@@ -35,6 +35,7 @@ swift run --disable-sandbox dingdang-pet-tool validate \
 ```
 
 资源协议见 [RESOURCE_FORMAT.md](docs/RESOURCE_FORMAT.md)，完整 JSON Schema 位于 [catalog-v1.schema.json](Schemas/catalog-v1.schema.json)。
+本次端到端实测结果见 [VALIDATION.md](docs/VALIDATION.md)。
 
 标准 Codex Pet v2 atlas 可以直接转换成完整 catalog：
 

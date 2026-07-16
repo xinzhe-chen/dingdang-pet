@@ -185,22 +185,9 @@ final class PetResourceUpdater: ObservableObject {
         guard data.count <= 2_000_000, let listing = String(data: data, encoding: .utf8) else {
             throw UpdateError.invalidArchive
         }
-        let entries = listing.split(separator: "\n", omittingEmptySubsequences: true)
-        guard !entries.isEmpty, entries.count <= PetSafetyLimits.maximumFiles else {
-            throw UpdateError.invalidArchive
-        }
-        for rawEntry in entries {
-            let entry = String(rawEntry).trimmingCharacters(in: .whitespacesAndNewlines)
-            let components = entry.split(separator: "/", omittingEmptySubsequences: false)
-            guard !entry.isEmpty,
-                  !entry.hasPrefix("/"),
-                  !entry.hasPrefix("~"),
-                  !entry.contains("\\"),
-                  !entry.contains("\0"),
-                  !components.contains(where: { $0 == "." || $0 == ".." }) else {
-                throw UpdateError.invalidArchive
-            }
-        }
+        let entries = listing.split(separator: "\n", omittingEmptySubsequences: true).map(String.init)
+        do { try ArchiveEntryValidator.validate(entries) }
+        catch { throw UpdateError.invalidArchive }
     }
 
     private func validateExtractedTree(_ root: URL) throws {

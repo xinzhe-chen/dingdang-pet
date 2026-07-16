@@ -97,6 +97,22 @@ final class PetCoreTests: XCTestCase {
         XCTAssertTrue(report.issues.contains(where: { $0.message.contains("Unsupported capabilities") }))
         XCTAssertTrue(report.issues.contains(where: { $0.message == "Unknown animation missing" }))
     }
+
+    func testArchiveEntryValidatorAcceptsCatalogAssets() throws {
+        try ArchiveEntryValidator.validate([
+            "catalog.json",
+            "pets/dingdang/spritesheet.png",
+            "pets/dingdang/sounds/click.wav"
+        ])
+    }
+
+    func testArchiveEntryValidatorRejectsTraversalAndPlatformPaths() {
+        for entries in [["../outside"], ["/absolute"], ["pets\\evil.png"], ["pets/./evil.png"], ["~/secret"]] {
+            XCTAssertThrowsError(try ArchiveEntryValidator.validate(entries))
+        }
+        XCTAssertThrowsError(try ArchiveEntryValidator.validate([]))
+        XCTAssertThrowsError(try ArchiveEntryValidator.validate(["a", "b"], maximumFiles: 1))
+    }
 }
 
 import CryptoKit
