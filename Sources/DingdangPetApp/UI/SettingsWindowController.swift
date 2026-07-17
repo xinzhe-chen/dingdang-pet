@@ -43,6 +43,7 @@ private struct SettingsView: View {
                     Slider(value: $settings.scale, in: 0.4...3, step: 0.05)
                     Text("\(Int(settings.scale * 100))%").monospacedDigit().frame(width: 54, alignment: .trailing)
                 }
+                .disabled(settings.displayMode != .desktop)
                 Toggle("桌面宠物始终置顶", isOn: $settings.alwaysOnTop)
                 Toggle("在所有桌面空间显示", isOn: $settings.showOnAllSpaces)
                 Toggle("登录时自动启动", isOn: $settings.launchAtLogin)

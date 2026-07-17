@@ -54,7 +54,7 @@ final class StatusItemController: NSObject, NSMenuDelegate {
         petsItem.submenu = petsMenu
         menu.addItem(petsItem)
 
-        let sizeMenu = NSMenu(title: "大小")
+        let sizeMenu = NSMenu(title: "桌面大小")
         for value in [0.5, 0.75, 1.0, 1.5, 2.0] {
             let item = NSMenuItem(title: "\(Int(value * 100))%", action: #selector(selectScale(_:)), keyEquivalent: "")
             item.target = self
@@ -62,8 +62,9 @@ final class StatusItemController: NSObject, NSMenuDelegate {
             item.state = abs(settings.scale - value) < 0.01 ? .on : .off
             sizeMenu.addItem(item)
         }
-        let sizeItem = NSMenuItem(title: "大小", action: nil, keyEquivalent: "")
+        let sizeItem = NSMenuItem(title: "桌面大小", action: nil, keyEquivalent: "")
         sizeItem.submenu = sizeMenu
+        sizeItem.isEnabled = settings.displayMode == .desktop
         menu.addItem(sizeItem)
 
         let rangeMenu = NSMenu(title: "菜单栏活动范围")

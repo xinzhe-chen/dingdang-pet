@@ -124,15 +124,15 @@ struct DingdangPetTool {
         }
 
         let definitions: [(String, Int, [Int], Bool)] = [
-            ("idle", 0, [420, 180, 180, 220, 220, 520], true),
+            ("idle", 0, [800, 360, 360, 440, 440, 1_000], true),
             ("running-right", 1, [120, 120, 120, 120, 120, 120, 120, 220], true),
             ("running-left", 2, [120, 120, 120, 120, 120, 120, 120, 220], true),
-            ("waving", 3, [240, 240, 240, 520], false),
-            ("jumping", 4, [220, 220, 220, 220, 500], false),
-            ("failed", 5, [240, 240, 240, 240, 240, 240, 240, 520], false),
-            ("waiting", 6, [260, 260, 260, 260, 260, 560], true),
+            ("waving", 3, [480, 480, 480, 1_040], false),
+            ("jumping", 4, [440, 440, 440, 440, 1_000], false),
+            ("failed", 5, [480, 480, 480, 480, 480, 480, 480, 1_040], false),
+            ("waiting", 6, [520, 520, 520, 520, 520, 1_120], true),
             ("running", 7, [120, 120, 120, 120, 120, 220], true),
-            ("review", 8, [260, 260, 260, 260, 260, 560], true)
+            ("review", 8, [520, 520, 520, 520, 520, 1_120], true)
         ]
         var animations = Dictionary(uniqueKeysWithValues: definitions.map { name, row, durations, loop in
             (name, AnimationDefinition(frames: frames(row: row, durations: durations), loop: loop))
@@ -191,7 +191,7 @@ struct DingdangPetTool {
                     WeightedBehavior(weight: 15, run: BehaviorNode(type: .play, animation: "failed"))
                 ])
             ],
-            directionalLook: DirectionalLookDefinition(enabled: true, deadzoneRadius: 90, selection: "nearest-angle", angles: lookAngles),
+            directionalLook: DirectionalLookDefinition(enabled: true, deadzoneRadius: 90, selection: "nearest-angle", angles: lookAngles, movementTimeout: 2.5),
             presentation: PresentationDefinition(
                 desktop: DisplayProfile(defaultScale: 0.55, minimumScale: 0.2, maximumScale: 2.5, height: 208, anchorX: 0.5, anchorY: 0.05),
                 menuBar: MenuBarProfile(height: 22, fillsAvailableHeight: true, speed: 54, safeMarginLeft: 90, safeMarginRight: 230, pauseInterval: ClosedRangeValue(min: 3, max: 8), avoidNotch: true, notchTraversal: .continuous),

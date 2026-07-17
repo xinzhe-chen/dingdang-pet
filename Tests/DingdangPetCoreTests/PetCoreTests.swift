@@ -224,6 +224,13 @@ final class PetCoreTests: XCTestCase {
             locomotionAnimationName: "running-right"
         ))
     }
+
+    func testPointerTrackingExpiresAfterMouseStops() {
+        XCTAssertFalse(PointerActivityResolver.didMove(distance: 0.5))
+        XCTAssertTrue(PointerActivityResolver.didMove(distance: 2))
+        XCTAssertTrue(PointerActivityResolver.shouldTrack(secondsSinceLastMovement: 2.4, timeout: 2.5))
+        XCTAssertFalse(PointerActivityResolver.shouldTrack(secondsSinceLastMovement: 2.6, timeout: 2.5))
+    }
 }
 
 import CryptoKit

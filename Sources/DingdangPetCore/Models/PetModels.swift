@@ -205,12 +205,14 @@ public struct DirectionalLookDefinition: Codable, Sendable {
     public var deadzoneRadius: Double
     public var selection: String
     public var angles: [DirectionalAnimation]
+    public var movementTimeout: Double?
 
-    public init(enabled: Bool = true, deadzoneRadius: Double = 40, selection: String = "nearest-angle", angles: [DirectionalAnimation]) {
+    public init(enabled: Bool = true, deadzoneRadius: Double = 40, selection: String = "nearest-angle", angles: [DirectionalAnimation], movementTimeout: Double? = nil) {
         self.enabled = enabled
         self.deadzoneRadius = deadzoneRadius
         self.selection = selection
         self.angles = angles
+        self.movementTimeout = movementTimeout
     }
 }
 

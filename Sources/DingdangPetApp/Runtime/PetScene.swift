@@ -16,7 +16,7 @@ final class PetScene: SKScene {
         super.init(size: size)
         backgroundColor = .clear
         scaleMode = .resizeFill
-        anchorPoint = CGPoint(x: 0.5, y: 0.5)
+        anchorPoint = .zero
         sprite.anchorPoint = CGPoint(x: 0.5, y: 0.5)
         addChild(sprite)
     }
@@ -70,7 +70,7 @@ final class PetScene: SKScene {
                         self.sprite.texture = texture
                         self.sprite.xScale = resolved.flipX ? -abs(resolved.scale) : abs(resolved.scale)
                         self.sprite.yScale = abs(resolved.scale)
-                        self.sprite.position = CGPoint(x: resolved.offsetX, y: -resolved.offsetY)
+                        self.sprite.position = self.centeredSpritePosition(offsetX: resolved.offsetX, offsetY: resolved.offsetY)
                         self.fitSprite(texture: texture)
                     },
                     SKAction.wait(forDuration: resolved.duration)
@@ -115,8 +115,15 @@ final class PetScene: SKScene {
     }
 
     private func layoutSprite() {
-        sprite.position = .zero
+        sprite.position = centeredSpritePosition(offsetX: 0, offsetY: 0)
         if let texture = sprite.texture { fitSprite(texture: texture) }
+    }
+
+    private func centeredSpritePosition(offsetX: Double, offsetY: Double) -> CGPoint {
+        CGPoint(
+            x: size.width / 2 + CGFloat(offsetX),
+            y: size.height / 2 - CGFloat(offsetY)
+        )
     }
 
     private func fitSprite(texture: SKTexture) {

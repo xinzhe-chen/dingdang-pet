@@ -13,6 +13,8 @@ final class PetPresentationCoordinator {
 
     private let desktopPanel: NSPanel
     private let menuBarPanel: NSPanel
+    private let rangePreviewPanel: NSPanel
+    private let rangePreviewView: RainbowRangePreviewView
     private var cancellables: Set<AnyCancellable> = []
     private var movementTimer: Timer?
     private var pointerTimer: Timer?
@@ -20,6 +22,9 @@ final class PetPresentationCoordinator {
     private var direction = 1
     private var previousMovementDate = Date()
     private var pauseUntil = Date.distantPast
+    private var rangePreviewDismissal: DispatchWorkItem?
+    private var lastPointerLocation: NSPoint?
+    private var lastPointerMovementDate = Date()
     private(set) var currentPet: PetDefinition?
     var showContextMenu: ((NSEvent) -> Void)?
 
@@ -34,6 +39,10 @@ final class PetPresentationCoordinator {
 
         desktopPanel = Self.makePanel(level: .floating)
         menuBarPanel = Self.makePanel(level: .statusBar)
+        rangePreviewPanel = Self.makePanel(level: .statusBar)
+        rangePreviewView = RainbowRangePreviewView(frame: .zero)
+        rangePreviewPanel.ignoresMouseEvents = true
+        rangePreviewPanel.contentView = rangePreviewView
 
         wireInteractions()
         reloadPet()
@@ -62,10 +71,13 @@ final class PetPresentationCoordinator {
         movementTimer = nil
         desktopPanel.orderOut(nil)
         menuBarPanel.orderOut(nil)
+        rangePreviewPanel.orderOut(nil)
 
         switch mode {
         case .desktop:
             scene.setContentInset(2)
+            lastPointerLocation = NSEvent.mouseLocation
+            lastPointerMovementDate = Date()
             attachPetView(to: desktopPanel)
             petView.allowsWindowDragging = true
             resizeDesktopPanel()
@@ -148,7 +160,10 @@ final class PetPresentationCoordinator {
         settings.$showOnAllSpaces.dropFirst().sink { [weak self] enabled in
             self?.desktopPanel.collectionBehavior = enabled ? [.canJoinAllSpaces, .fullScreenAuxiliary, .stationary] : [.fullScreenAuxiliary]
         }.store(in: &cancellables)
-        settings.$menuBarRangeMode.dropFirst().sink { [weak self] _ in self?.configureMenuBarPanel(resetPosition: false) }.store(in: &cancellables)
+        settings.$menuBarRangeMode.dropFirst().sink { [weak self] _ in
+            self?.configureMenuBarPanel(resetPosition: false)
+            self?.showMenuBarRangePreview()
+        }.store(in: &cancellables)
         settings.$selectedPetID.dropFirst().sink { [weak self] _ in self?.reloadPet() }.store(in: &cancellables)
         catalogStore.$catalog.dropFirst().sink { [weak self] _ in self?.reloadPet() }.store(in: &cancellables)
     }
@@ -200,18 +215,22 @@ final class PetPresentationCoordinator {
     private func configureMenuBarPanel(resetPosition: Bool) {
         guard settings.displayMode == .menuBar, let screen = activeScreen(), let pet = currentPet else { return }
         let geometry = menuBarGeometry(on: screen)
-        let requestedHeight = max(14, CGFloat(pet.presentation.menuBar.height))
-        let panelHeight = (pet.presentation.menuBar.fillsAvailableHeight ?? true) ? geometry.height : min(requestedHeight, geometry.height)
-        let aspect = menuBarAspectRatio(for: pet)
-        let width = max(1, panelHeight * aspect)
-        menuBarPanel.setFrame(NSRect(x: menuBarPanel.frame.minX, y: geometry.bottom, width: width, height: panelHeight), display: true)
+        let size = menuBarPanelSize(on: screen, for: pet)
+        let bounds = horizontalBounds(on: screen, panelWidth: size.width)
+        let x = resetPosition ? bounds.lowerBound : min(max(menuBarPanel.frame.minX, bounds.lowerBound), bounds.upperBound)
+        menuBarPanel.setFrame(NSRect(x: x, y: geometry.bottom, width: size.width, height: size.height), display: true)
         petView.frame = NSRect(origin: .zero, size: menuBarPanel.frame.size)
         scene.size = menuBarPanel.frame.size
         if resetPosition {
-            let bounds = horizontalBounds(on: screen)
-            menuBarPanel.setFrameOrigin(NSPoint(x: bounds.lowerBound, y: geometry.bottom))
             direction = 1
         }
+    }
+
+    private func menuBarPanelSize(on screen: NSScreen, for pet: PetDefinition) -> CGSize {
+        let geometry = menuBarGeometry(on: screen)
+        let requestedHeight = max(14, CGFloat(pet.presentation.menuBar.height))
+        let height = (pet.presentation.menuBar.fillsAvailableHeight ?? true) ? geometry.height : min(requestedHeight, geometry.height)
+        return CGSize(width: max(1, height * menuBarAspectRatio(for: pet)), height: height)
     }
 
     private func menuBarGeometry(on screen: NSScreen) -> (bottom: CGFloat, height: CGFloat) {
@@ -231,19 +250,40 @@ final class PetPresentationCoordinator {
         return CGFloat(resolved.rect.width) / CGFloat(resolved.rect.height)
     }
 
-    private func horizontalBounds(on screen: NSScreen) -> ClosedRange<CGFloat> {
-        guard let pet = currentPet else { return screen.frame.minX...(screen.frame.maxX - menuBarPanel.frame.width) }
+    private func horizontalBounds(on screen: NSScreen, panelWidth: CGFloat? = nil) -> ClosedRange<CGFloat> {
+        guard let pet = currentPet else { return screen.frame.minX...(screen.frame.maxX - (panelWidth ?? menuBarPanel.frame.width)) }
         let profile = pet.presentation.menuBar
         let left = settings.menuBarRangeMode == .safe ? CGFloat(profile.safeMarginLeft) : 0
         let right = settings.menuBarRangeMode == .safe ? CGFloat(profile.safeMarginRight) : 0
+        let resolvedPanelWidth = panelWidth ?? menuBarPanel.frame.width
         let bounds = MenuBarMovementResolver.bounds(
             screenMinX: Double(screen.frame.minX),
             screenMaxX: Double(screen.frame.maxX),
-            panelWidth: Double(menuBarPanel.frame.width),
+            panelWidth: Double(resolvedPanelWidth),
             leftMargin: Double(left),
             rightMargin: Double(right)
         )
         return CGFloat(bounds.lowerBound)...CGFloat(bounds.upperBound)
+    }
+
+    private func showMenuBarRangePreview() {
+        guard let screen = activeScreen(), let pet = currentPet else { return }
+        let geometry = menuBarGeometry(on: screen)
+        let petSize = menuBarPanelSize(on: screen, for: pet)
+        let bounds = horizontalBounds(on: screen, panelWidth: petSize.width)
+        let width = max(1, bounds.upperBound - bounds.lowerBound + petSize.width)
+        rangePreviewPanel.setFrame(
+            NSRect(x: bounds.lowerBound, y: geometry.bottom, width: width, height: geometry.height),
+            display: true
+        )
+        rangePreviewView.frame = rangePreviewPanel.contentLayoutRect
+        rangePreviewPanel.orderFrontRegardless()
+        rangePreviewView.play()
+
+        rangePreviewDismissal?.cancel()
+        let dismissal = DispatchWorkItem { [weak self] in self?.rangePreviewPanel.orderOut(nil) }
+        rangePreviewDismissal = dismissal
+        DispatchQueue.main.asyncAfter(deadline: .now() + 1.8, execute: dismissal)
     }
 
     private func startMenuBarMovement() {
@@ -314,9 +354,26 @@ final class PetPresentationCoordinator {
         guard settings.displayMode == .desktop, let window = petView.window, let currentPet else { return }
         let idleName = currentPet.bindings["defaultIdle"]
         let lookNames = Set(currentPet.directionalLook?.angles.map(\.animation) ?? [])
+        let pointer = NSEvent.mouseLocation
+        let now = Date()
+        if let previous = lastPointerLocation {
+            let movement = hypot(pointer.x - previous.x, pointer.y - previous.y)
+            if PointerActivityResolver.didMove(distance: movement) { lastPointerMovementDate = now }
+        } else {
+            lastPointerMovementDate = now
+        }
+        lastPointerLocation = pointer
+
+        let timeout = currentPet.directionalLook?.movementTimeout ?? 2.5
+        guard PointerActivityResolver.shouldTrack(
+            secondsSinceLastMovement: now.timeIntervalSince(lastPointerMovementDate),
+            timeout: timeout
+        ) else {
+            if scene.currentAnimationName.map(lookNames.contains) == true { behaviorEngine.returnToIdle() }
+            return
+        }
         guard scene.currentAnimationName == idleName || scene.currentAnimationName.map(lookNames.contains) == true else { return }
         let center = NSPoint(x: window.frame.midX, y: window.frame.midY)
-        let pointer = NSEvent.mouseLocation
         let dx = pointer.x - center.x
         let dy = pointer.y - center.y
         let distance = hypot(dx, dy)
