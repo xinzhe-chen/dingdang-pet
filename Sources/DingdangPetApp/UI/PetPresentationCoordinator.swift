@@ -59,7 +59,14 @@ final class PetPresentationCoordinator {
             behaviorEngine.rootURL = catalogStore.rootURL
             if settings.selectedPetID != pet.id { settings.selectedPetID = pet.id }
             settings.clampScale(for: pet)
-            resizeDesktopPanel()
+            switch settings.displayMode {
+            case .desktop:
+                resizeDesktopPanel()
+            case .menuBar:
+                configureMenuBarPanel(resetPosition: false)
+            case .hidden:
+                break
+            }
             scheduleRandomIdle()
         } catch {
             NSSound.beep()
@@ -89,6 +96,7 @@ final class PetPresentationCoordinator {
             attachPetView(to: menuBarPanel)
             petView.allowsWindowDragging = false
             configureMenuBarPanel(resetPosition: true)
+            menuBarPanel.contentView?.layoutSubtreeIfNeeded()
             menuBarPanel.orderFrontRegardless()
             startMenuBarMovement()
         case .hidden:
@@ -153,8 +161,15 @@ final class PetPresentationCoordinator {
     }
 
     private func observeSettings() {
-        settings.$displayMode.dropFirst().sink { [weak self] mode in self?.applyMode(mode) }.store(in: &cancellables)
-        settings.$scale.dropFirst().sink { [weak self] _ in self?.resizeDesktopPanel() }.store(in: &cancellables)
+        settings.$displayMode.dropFirst().sink { [weak self] mode in
+            // @Published emits the new value before displayMode itself changes, so
+            // applyMode and its layout helpers must use `mode` instead of rereading it.
+            self?.applyMode(mode)
+        }.store(in: &cancellables)
+        settings.$scale.dropFirst().sink { [weak self] _ in
+            guard let self, self.settings.displayMode == .desktop else { return }
+            self.resizeDesktopPanel()
+        }.store(in: &cancellables)
         settings.$alwaysOnTop.dropFirst().sink { [weak self] enabled in
             self?.desktopPanel.level = enabled ? .floating : .normal
         }.store(in: &cancellables)
@@ -177,7 +192,7 @@ final class PetPresentationCoordinator {
     }
 
     private func resizeDesktopPanel() {
-        guard settings.displayMode == .desktop || currentPet != nil, let pet = currentPet else { return }
+        guard let pet = currentPet else { return }
         let height = CGFloat(pet.presentation.desktop.height * settings.scale)
         let aspect: CGFloat = {
             guard let animation = pet.bindings["defaultIdle"].flatMap({ pet.animations[$0] }), let frame = animation.frames.first,
@@ -214,7 +229,7 @@ final class PetPresentationCoordinator {
     }
 
     private func configureMenuBarPanel(resetPosition: Bool, rangeMode: MenuBarRangeMode? = nil) {
-        guard settings.displayMode == .menuBar, let screen = activeScreen(), let pet = currentPet else { return }
+        guard let screen = activeScreen(), let pet = currentPet else { return }
         let geometry = menuBarGeometry(on: screen)
         let size = menuBarPanelSize(on: screen, for: pet)
         let bounds = horizontalBounds(on: screen, panelWidth: size.width, rangeMode: rangeMode)
