@@ -1,9 +1,62 @@
 {
-  "catalogVersion" : "1.3.0",
+  "catalogVersion" : "1.4.0",
   "defaultPetID" : "dingdang",
   "pets" : [
     {
       "animations" : {
+        "belly-rub" : {
+          "frames" : [
+            {
+              "atlas" : "belly",
+              "column" : 0,
+              "durationMs" : 420,
+              "row" : 0
+            },
+            {
+              "atlas" : "belly",
+              "column" : 1,
+              "durationMs" : 520,
+              "row" : 0
+            },
+            {
+              "atlas" : "belly",
+              "column" : 2,
+              "durationMs" : 600,
+              "row" : 0
+            },
+            {
+              "atlas" : "belly",
+              "column" : 3,
+              "durationMs" : 680,
+              "row" : 0
+            },
+            {
+              "atlas" : "belly",
+              "column" : 4,
+              "durationMs" : 1100,
+              "row" : 0
+            },
+            {
+              "atlas" : "belly",
+              "column" : 5,
+              "durationMs" : 900,
+              "row" : 0
+            },
+            {
+              "atlas" : "belly",
+              "column" : 6,
+              "durationMs" : 650,
+              "row" : 0
+            },
+            {
+              "atlas" : "belly",
+              "column" : 7,
+              "durationMs" : 1400,
+              "row" : 0
+            }
+          ],
+          "loop" : false
+        },
         "failed" : {
           "frames" : [
             {
@@ -566,32 +619,35 @@
             "spacing" : 0,
             "type" : "grid"
           }
+        },
+        {
+          "file" : "pets\/dingdang\/belly-spritesheet.webp",
+          "filtering" : "linear",
+          "id" : "belly",
+          "layout" : {
+            "cellHeight" : 208,
+            "cellWidth" : 192,
+            "columns" : 8,
+            "margin" : 0,
+            "rows" : 1,
+            "spacing" : 0,
+            "type" : "grid"
+          }
         }
       ],
       "author" : "Dingdang Pet",
       "behaviors" : {
+        "hoverEnter" : {
+          "animation" : "waving",
+          "type" : "play"
+        },
         "longPress" : {
           "animation" : "waiting",
           "type" : "play"
         },
         "primaryClick" : {
-          "choices" : [
-            {
-              "run" : {
-                "animation" : "waving",
-                "type" : "play"
-              },
-              "weight" : 70
-            },
-            {
-              "run" : {
-                "animation" : "jumping",
-                "type" : "play"
-              },
-              "weight" : 30
-            }
-          ],
-          "type" : "random"
+          "animation" : "belly-rub",
+          "type" : "play"
         },
         "randomIdle" : {
           "choices" : [
@@ -653,10 +709,11 @@
       },
       "bindings" : {
         "defaultIdle" : "idle",
+        "hoverEnter" : "waving",
         "longPress" : "waiting",
         "moveLeft" : "running-left",
         "moveRight" : "running-right",
-        "primaryClick" : "waving",
+        "primaryClick" : "belly-rub",
         "secondaryClick" : "jumping"
       },
       "description" : "Codex Pet v2 compatible animated pet",
@@ -732,7 +789,7 @@
         "movementTimeout" : 2.5,
         "selection" : "nearest-angle"
       },
-      "displayName" : "叮当",
+      "displayName" : "叮当（银渐层）",
       "format" : "codex-pet-v2",
       "id" : "dingdang",
       "presentation" : {
@@ -766,9 +823,10 @@
         "desktop-pet",
         "menu-bar-roaming",
         "pointer-look",
-        "behavior-graph"
+        "behavior-graph",
+        "multiple-atlases"
       ],
-      "version" : "1.3.0"
+      "version" : "1.4.0"
     }
   ],
   "schemaVersion" : 1

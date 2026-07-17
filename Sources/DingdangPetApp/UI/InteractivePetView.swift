@@ -3,6 +3,8 @@ import SpriteKit
 
 @MainActor
 final class InteractivePetView: SKView {
+    var onHoverEnter: (() -> Void)?
+    var onHoverExit: (() -> Void)?
     var onPrimaryClick: (() -> Void)?
     var onSecondaryClick: (() -> Void)?
     var onLongPress: (() -> Void)?
@@ -13,9 +15,36 @@ final class InteractivePetView: SKView {
     private var mouseDownLocation: NSPoint?
     private var initialWindowOrigin: NSPoint?
     private var longPressWorkItem: DispatchWorkItem?
+    private var hoverTrackingArea: NSTrackingArea?
+    private var isPointerInside = false
 
     override var acceptsFirstResponder: Bool { true }
     override func acceptsFirstMouse(for event: NSEvent?) -> Bool { true }
+
+    override func updateTrackingAreas() {
+        if let hoverTrackingArea { removeTrackingArea(hoverTrackingArea) }
+        let area = NSTrackingArea(
+            rect: bounds,
+            options: [.activeAlways, .mouseEnteredAndExited, .inVisibleRect],
+            owner: self,
+            userInfo: nil
+        )
+        addTrackingArea(area)
+        hoverTrackingArea = area
+        super.updateTrackingAreas()
+    }
+
+    override func mouseEntered(with event: NSEvent) {
+        guard !isPointerInside else { return }
+        isPointerInside = true
+        onHoverEnter?()
+    }
+
+    override func mouseExited(with event: NSEvent) {
+        guard isPointerInside else { return }
+        isPointerInside = false
+        onHoverExit?()
+    }
 
     override func mouseDown(with event: NSEvent) {
         mouseDownLocation = NSEvent.mouseLocation

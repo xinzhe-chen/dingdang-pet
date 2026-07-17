@@ -65,22 +65,30 @@ struct DingdangPetTool {
             guard arguments.count == 5 else { throw ToolError.usage("package <catalog-directory> <version> <asset-base-url> <output-directory> <private-key-file>") }
             try package(catalogDirectory: arguments[0], version: arguments[1], assetBaseURL: arguments[2], outputDirectory: arguments[3], privateKeyFile: arguments[4])
         case "import-codex-v2":
-            guard arguments.count == 5 else {
-                throw ToolError.usage("import-codex-v2 <atlas.png|atlas.webp> <pet-id> <display-name> <version> <output-directory>")
+            guard arguments.count == 5 || arguments.count == 6 else {
+                throw ToolError.usage("import-codex-v2 <atlas.png|atlas.webp> <pet-id> <display-name> <version> <output-directory> [belly-atlas.png|belly-atlas.webp]")
             }
             try importCodexV2(
                 atlasPath: arguments[0],
                 petID: arguments[1],
                 displayName: arguments[2],
                 version: arguments[3],
-                outputDirectory: arguments[4]
+                outputDirectory: arguments[4],
+                bellyAtlasPath: arguments.count == 6 ? arguments[5] : nil
             )
         default:
             throw ToolError.usage(usage)
         }
     }
 
-    static func importCodexV2(atlasPath: String, petID: String, displayName: String, version: String, outputDirectory: String) throws {
+    static func importCodexV2(
+        atlasPath: String,
+        petID: String,
+        displayName: String,
+        version: String,
+        outputDirectory: String,
+        bellyAtlasPath: String? = nil
+    ) throws {
         let source = URL(fileURLWithPath: atlasPath).standardizedFileURL
         guard FileManager.default.fileExists(atPath: source.path) else {
             throw ToolError.process("atlas does not exist: \(source.path)")
@@ -98,24 +106,46 @@ struct DingdangPetTool {
         try? FileManager.default.removeItem(at: destination)
         try FileManager.default.copyItem(at: source, to: destination)
 
+        var bellyAtlasFilename: String?
+        if let bellyAtlasPath {
+            let bellySource = URL(fileURLWithPath: bellyAtlasPath).standardizedFileURL
+            guard FileManager.default.fileExists(atPath: bellySource.path) else {
+                throw ToolError.process("belly atlas does not exist: \(bellySource.path)")
+            }
+            let bellyExtension = bellySource.pathExtension.lowercased()
+            guard ["png", "webp"].contains(bellyExtension) else {
+                throw ToolError.process("unsupported belly atlas format: \(bellySource.pathExtension); expected PNG or WebP")
+            }
+            let filename = "belly-spritesheet.\(bellyExtension)"
+            let bellyDestination = petDirectory.appendingPathComponent(filename)
+            try? FileManager.default.removeItem(at: bellyDestination)
+            try FileManager.default.copyItem(at: bellySource, to: bellyDestination)
+            bellyAtlasFilename = filename
+        }
+
         let catalog = makeCodexV2Catalog(
             petID: petID,
             displayName: displayName,
             version: version,
-            atlasFilename: atlasFilename
+            atlasFilename: atlasFilename,
+            bellyAtlasFilename: bellyAtlasFilename
         )
         try JSONEncoder.pretty.encode(catalog).write(to: root.appendingPathComponent("catalog.json"), options: .atomic)
         let report = PetValidator.validate(catalog: catalog, rootURL: root)
         guard report.isValid else { throw ToolError.validation(report.issues) }
         print("catalog=\(root.appendingPathComponent("catalog.json").path)")
         print("atlas=\(destination.path)")
+        if let bellyAtlasFilename {
+            print("bellyAtlas=\(petDirectory.appendingPathComponent(bellyAtlasFilename).path)")
+        }
     }
 
     static func makeCodexV2Catalog(
         petID: String,
         displayName: String,
         version: String,
-        atlasFilename: String = "spritesheet.png"
+        atlasFilename: String = "spritesheet.png",
+        bellyAtlasFilename: String? = nil
     ) -> PetCatalog {
         func frames(row: Int, durations: [Int]) -> [AnimationFrame] {
             durations.enumerated().map { column, duration in
@@ -137,6 +167,14 @@ struct DingdangPetTool {
         var animations = Dictionary(uniqueKeysWithValues: definitions.map { name, row, durations, loop in
             (name, AnimationDefinition(frames: frames(row: row, durations: durations), loop: loop))
         })
+        if bellyAtlasFilename != nil {
+            animations["belly-rub"] = AnimationDefinition(
+                frames: [420, 520, 600, 680, 1_100, 900, 650, 1_400].enumerated().map { column, duration in
+                    AnimationFrame(atlas: "belly", row: 0, column: column, durationMs: duration)
+                },
+                loop: false
+            )
+        }
         var lookAngles: [DirectionalAnimation] = []
         for index in 0..<16 {
             let degrees = Double(index) * 22.5
@@ -154,7 +192,7 @@ struct DingdangPetTool {
             author: "Dingdang Pet",
             version: version,
             format: "codex-pet-v2",
-            requiredCapabilities: ["desktop-pet", "menu-bar-roaming", "pointer-look", "behavior-graph"],
+            requiredCapabilities: ["desktop-pet", "menu-bar-roaming", "pointer-look", "behavior-graph"] + (bellyAtlasFilename == nil ? [] : ["multiple-atlases"]),
             atlases: [
                 AtlasDefinition(
                     id: "main",
@@ -162,21 +200,27 @@ struct DingdangPetTool {
                     layout: AtlasLayout(type: .grid, columns: 8, rows: 11, cellWidth: 192, cellHeight: 208, spacing: 0, margin: 0),
                     filtering: .nearest
                 )
-            ],
+            ] + (bellyAtlasFilename.map { filename in
+                [AtlasDefinition(
+                    id: "belly",
+                    file: "pets/\(petID)/\(filename)",
+                    layout: AtlasLayout(type: .grid, columns: 8, rows: 1, cellWidth: 192, cellHeight: 208, spacing: 0, margin: 0),
+                    filtering: .linear
+                )]
+            } ?? []),
             animations: animations,
             bindings: [
                 "defaultIdle": "idle",
                 "moveRight": "running-right",
                 "moveLeft": "running-left",
-                "primaryClick": "waving",
+                "hoverEnter": "waving",
+                "primaryClick": bellyAtlasFilename == nil ? "waving" : "belly-rub",
                 "secondaryClick": "jumping",
                 "longPress": "waiting"
             ],
             behaviors: [
-                "primaryClick": BehaviorNode(type: .random, choices: [
-                    WeightedBehavior(weight: 70, run: BehaviorNode(type: .play, animation: "waving")),
-                    WeightedBehavior(weight: 30, run: BehaviorNode(type: .play, animation: "jumping"))
-                ]),
+                "hoverEnter": BehaviorNode(type: .play, animation: "waving"),
+                "primaryClick": BehaviorNode(type: .play, animation: bellyAtlasFilename == nil ? "waving" : "belly-rub"),
                 "secondaryClick": BehaviorNode(type: .sequence, steps: [
                     BehaviorNode(type: .play, animation: "jumping"),
                     BehaviorNode(type: .wait, durationMs: 100),
@@ -260,7 +304,7 @@ struct DingdangPetTool {
       sign <manifest.json> <private-key-file> <manifest.sig>
       verify <manifest.json> <manifest.sig> <public-key-file>
       package <catalog-directory> <version> <asset-base-url> <output-directory> <private-key-file>
-      import-codex-v2 <atlas.png|atlas.webp> <pet-id> <display-name> <version> <output-directory>
+      import-codex-v2 <atlas.png|atlas.webp> <pet-id> <display-name> <version> <output-directory> [belly-atlas.png|belly-atlas.webp]
     """
 }
 

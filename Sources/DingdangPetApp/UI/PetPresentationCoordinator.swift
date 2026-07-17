@@ -129,6 +129,7 @@ final class PetPresentationCoordinator {
     }
 
     private func wireInteractions() {
+        petView.onHoverEnter = { [weak self] in self?.behaviorEngine.trigger("hoverEnter") }
         petView.onPrimaryClick = { [weak self] in self?.behaviorEngine.trigger("primaryClick") }
         petView.onSecondaryClick = { [weak self] in self?.behaviorEngine.trigger("secondaryClick") }
         petView.onLongPress = { [weak self] in self?.behaviorEngine.trigger("longPress") }

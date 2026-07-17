@@ -83,11 +83,14 @@
 唯一必需语义是 `defaultIdle`。常用可选语义：
 
 - `moveLeft` / `moveRight`
+- `hoverEnter`
 - `primaryClick` / `secondaryClick` / `longPress`
 - `dragging`
 - `updateSucceeded` / `updateFailed`
 
 绑定目标是 animations 中任意名称。
+
+`hoverEnter` 在指针每次从宠物外部进入时触发一次；指针停留期间不会重复触发。`primaryClick` 可以绑定到任意 atlas 中的非循环动作，例如独立的趴下/翻肚皮序列。
 
 ## Directional look
 

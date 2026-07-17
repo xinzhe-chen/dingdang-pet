@@ -2,12 +2,12 @@
 
 Dingdang Pet 是一个独立运行的原生 macOS 桌面宠物。App 本身是固定的通用运行时；宠物外观、atlas 几何、动画、行为图、菜单栏速度和大部分展示参数都从签名的 GitHub Release 资源加载。
 
-当前内置资源和 [pets-v1.3.0](https://github.com/xinzhe-chen/dingdang-pet/releases/tag/pets-v1.3.0) 均使用 Codex 中的银渐层「叮当」原始 v2 WebP 图集，而不是早期的紫色示例猫。
+当前内置资源和 [pets-v1.4.0](https://github.com/xinzhe-chen/dingdang-pet/releases/tag/pets-v1.4.0) 均保留 Codex 中的银渐层「叮当」原始 v2 WebP 图集，并增加独立的透明翻肚皮动作图集，而不是早期的紫色示例猫。
 
 ## 已实现
 
 - 桌面透明悬浮、拖动、滚轮/触控板缩放和位置记忆
-- 单击、双击、长按、随机 idle 与方向视线互动
+- 鼠标每次悬停进入时挥手；单击后趴下、侧倒并翻肚皮享受；另有双击、长按和随机 idle 互动
 - 整条菜单栏漫步、安全范围、连续穿越刘海、左右转向、原地随机动作和彩虹范围预览
 - 桌面鼠标移动时跟随视线，鼠标静止后自动回到自由 idle/随机动作
 - 桌面、菜单栏、隐藏三模式；固定状态栏入口始终可恢复宠物
@@ -44,10 +44,10 @@ swift run --disable-sandbox dingdang-pet-tool validate \
 
 ```bash
 swift run --disable-sandbox dingdang-pet-tool import-codex-v2 \
-  spritesheet.webp dingdang '叮当' 1.3.0 output-catalog
+  spritesheet.webp dingdang '叮当' 1.4.0 output-catalog belly-spritesheet.webp
 ```
 
-该命令接受 PNG 或 WebP，要求标准 8×11、192×208 cell 的 v2 atlas，并自动写入 9 行动作、逐帧时长、16 个视线方向和默认互动行为。其他宠物也可以直接使用完全可变的 v1 资源协议。
+该命令接受 PNG 或 WebP，要求主图集为标准 8×11、192×208 cell 的 v2 atlas；可选的第二张 8×1 图集用于点击翻肚皮动作。它会自动写入基础动作、逐帧时长、16 个视线方向、悬停挥手和点击行为。其他宠物也可以直接使用完全可变的 v1 资源协议。
 
 ## 配置 GitHub Release
 
@@ -69,7 +69,7 @@ swift run --disable-sandbox dingdang-pet-tool import-codex-v2 \
 4. 发布宠物资源：
 
    ```bash
-   scripts/publish-pet-release.sh 1.3.0 xinzhe-chen/dingdang-pet
+   scripts/publish-pet-release.sh 1.4.0 xinzhe-chen/dingdang-pet
    ```
 
 ## 给朋友分发
