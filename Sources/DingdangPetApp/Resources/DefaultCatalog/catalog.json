@@ -1,5 +1,5 @@
 {
-  "catalogVersion" : "1.0.0",
+  "catalogVersion" : "1.1.0",
   "defaultPetID" : "dingdang",
   "pets" : [
     {
@@ -554,7 +554,7 @@
       },
       "atlases" : [
         {
-          "file" : "pets\/dingdang\/spritesheet.png",
+          "file" : "pets\/dingdang\/spritesheet.webp",
           "filtering" : "nearest",
           "id" : "main",
           "layout" : {
@@ -717,7 +717,7 @@
         "enabled" : true,
         "selection" : "nearest-angle"
       },
-      "displayName" : "Dingdang",
+      "displayName" : "叮当",
       "format" : "codex-pet-v2",
       "id" : "dingdang",
       "presentation" : {
@@ -751,7 +751,7 @@
         "pointer-look",
         "behavior-graph"
       ],
-      "version" : "1.0.0"
+      "version" : "1.1.0"
     }
   ],
   "schemaVersion" : 1

@@ -66,7 +66,7 @@ struct DingdangPetTool {
             try package(catalogDirectory: arguments[0], version: arguments[1], assetBaseURL: arguments[2], outputDirectory: arguments[3], privateKeyFile: arguments[4])
         case "import-codex-v2":
             guard arguments.count == 5 else {
-                throw ToolError.usage("import-codex-v2 <atlas.png> <pet-id> <display-name> <version> <output-directory>")
+                throw ToolError.usage("import-codex-v2 <atlas.png|atlas.webp> <pet-id> <display-name> <version> <output-directory>")
             }
             try importCodexV2(
                 atlasPath: arguments[0],
@@ -85,15 +85,25 @@ struct DingdangPetTool {
         guard FileManager.default.fileExists(atPath: source.path) else {
             throw ToolError.process("atlas does not exist: \(source.path)")
         }
+        let atlasExtension = source.pathExtension.lowercased()
+        guard ["png", "webp"].contains(atlasExtension) else {
+            throw ToolError.process("unsupported atlas format: \(source.pathExtension); expected PNG or WebP")
+        }
 
         let root = URL(fileURLWithPath: outputDirectory, isDirectory: true).standardizedFileURL
         let petDirectory = root.appendingPathComponent("pets/\(petID)", isDirectory: true)
         try FileManager.default.createDirectory(at: petDirectory, withIntermediateDirectories: true)
-        let destination = petDirectory.appendingPathComponent("spritesheet.png")
+        let atlasFilename = "spritesheet.\(atlasExtension)"
+        let destination = petDirectory.appendingPathComponent(atlasFilename)
         try? FileManager.default.removeItem(at: destination)
         try FileManager.default.copyItem(at: source, to: destination)
 
-        let catalog = makeCodexV2Catalog(petID: petID, displayName: displayName, version: version)
+        let catalog = makeCodexV2Catalog(
+            petID: petID,
+            displayName: displayName,
+            version: version,
+            atlasFilename: atlasFilename
+        )
         try JSONEncoder.pretty.encode(catalog).write(to: root.appendingPathComponent("catalog.json"), options: .atomic)
         let report = PetValidator.validate(catalog: catalog, rootURL: root)
         guard report.isValid else { throw ToolError.validation(report.issues) }
@@ -101,7 +111,12 @@ struct DingdangPetTool {
         print("atlas=\(destination.path)")
     }
 
-    static func makeCodexV2Catalog(petID: String, displayName: String, version: String) -> PetCatalog {
+    static func makeCodexV2Catalog(
+        petID: String,
+        displayName: String,
+        version: String,
+        atlasFilename: String = "spritesheet.png"
+    ) -> PetCatalog {
         func frames(row: Int, durations: [Int]) -> [AnimationFrame] {
             durations.enumerated().map { column, duration in
                 AnimationFrame(atlas: "main", row: row, column: column, durationMs: duration)
@@ -143,7 +158,7 @@ struct DingdangPetTool {
             atlases: [
                 AtlasDefinition(
                     id: "main",
-                    file: "pets/\(petID)/spritesheet.png",
+                    file: "pets/\(petID)/\(atlasFilename)",
                     layout: AtlasLayout(type: .grid, columns: 8, rows: 11, cellWidth: 192, cellHeight: 208, spacing: 0, margin: 0),
                     filtering: .nearest
                 )
@@ -243,7 +258,7 @@ struct DingdangPetTool {
       sign <manifest.json> <private-key-file> <manifest.sig>
       verify <manifest.json> <manifest.sig> <public-key-file>
       package <catalog-directory> <version> <asset-base-url> <output-directory> <private-key-file>
-      import-codex-v2 <atlas.png> <pet-id> <display-name> <version> <output-directory>
+      import-codex-v2 <atlas.png|atlas.webp> <pet-id> <display-name> <version> <output-directory>
     """
 }
 

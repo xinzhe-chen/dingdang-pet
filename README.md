@@ -41,10 +41,10 @@ swift run --disable-sandbox dingdang-pet-tool validate \
 
 ```bash
 swift run --disable-sandbox dingdang-pet-tool import-codex-v2 \
-  spritesheet.png dingdang Dingdang 1.0.0 output-catalog
+  spritesheet.webp dingdang '叮当' 1.1.0 output-catalog
 ```
 
-该命令要求标准 8×11、192×208 cell 的 v2 atlas，并自动写入 9 行动作、逐帧时长、16 个视线方向和默认互动行为。其他宠物也可以直接使用完全可变的 v1 资源协议。
+该命令接受 PNG 或 WebP，要求标准 8×11、192×208 cell 的 v2 atlas，并自动写入 9 行动作、逐帧时长、16 个视线方向和默认互动行为。其他宠物也可以直接使用完全可变的 v1 资源协议。
 
 ## 配置 GitHub Release
 
