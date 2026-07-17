@@ -1,5 +1,5 @@
 {
-  "catalogVersion" : "1.4.0",
+  "catalogVersion" : "1.4.1",
   "defaultPetID" : "dingdang",
   "pets" : [
     {
@@ -826,7 +826,7 @@
         "behavior-graph",
         "multiple-atlases"
       ],
-      "version" : "1.4.0"
+      "version" : "1.4.1"
     }
   ],
   "schemaVersion" : 1

@@ -10,6 +10,7 @@ final class PetScene: SKScene {
     private(set) var currentAnimationName: String?
     private var rootURL: URL?
     private var animationToken = UUID()
+    private var pendingAnimationCompletion: (() -> Void)?
     private var contentInset: CGFloat = 2
 
     override init(size: CGSize) {
@@ -54,6 +55,7 @@ final class PetScene: SKScene {
             completion?()
             return
         }
+        finishPendingAnimation()
         let token = UUID()
         animationToken = token
         currentAnimationName = name
@@ -92,18 +94,21 @@ final class PetScene: SKScene {
             if repeatsForever {
                 sprite.run(action, withKey: "animation")
             } else {
+                pendingAnimationCompletion = completion
                 let completed = SKAction.run { [weak self] in
                     guard let self, self.animationToken == token else { return }
-                    completion?()
+                    self.finishPendingAnimation()
                 }
                 sprite.run(SKAction.sequence([action, completed]), withKey: "animation")
             }
         } catch {
+            pendingAnimationCompletion = nil
             completion?()
         }
     }
 
     func stopAndIdle() {
+        finishPendingAnimation()
         animationToken = UUID()
         sprite.removeAction(forKey: "animation")
         playIdle()
@@ -132,5 +137,11 @@ final class PetScene: SKScene {
         let available = CGSize(width: max(1, size.width - contentInset * 2), height: max(1, size.height - contentInset * 2))
         let factor = min(available.width / textureSize.width, available.height / textureSize.height)
         sprite.size = CGSize(width: textureSize.width * factor, height: textureSize.height * factor)
+    }
+
+    private func finishPendingAnimation() {
+        let completion = pendingAnimationCompletion
+        pendingAnimationCompletion = nil
+        completion?()
     }
 }

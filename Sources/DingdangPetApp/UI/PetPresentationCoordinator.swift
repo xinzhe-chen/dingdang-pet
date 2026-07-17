@@ -393,8 +393,11 @@ final class PetPresentationCoordinator {
         let delay = Double.random(in: interval.min...max(interval.min, interval.max))
         idleTimer = Timer.scheduledTimer(withTimeInterval: delay, repeats: false) { [weak self] _ in
             Task { @MainActor in
-                self?.behaviorEngine.trigger("randomIdle")
-                self?.scheduleRandomIdle()
+                guard let self else { return }
+                if !self.behaviorEngine.isPerformingBehavior {
+                    self.behaviorEngine.trigger("randomIdle")
+                }
+                self.scheduleRandomIdle()
             }
         }
     }
