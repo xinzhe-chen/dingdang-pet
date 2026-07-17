@@ -65,6 +65,7 @@ final class PetPresentationCoordinator {
 
         switch mode {
         case .desktop:
+            scene.setContentInset(2)
             attachPetView(to: desktopPanel)
             petView.allowsWindowDragging = true
             resizeDesktopPanel()
@@ -72,6 +73,7 @@ final class PetPresentationCoordinator {
             desktopPanel.orderFrontRegardless()
             behaviorEngine.returnToIdle()
         case .menuBar:
+            scene.setContentInset(0)
             attachPetView(to: menuBarPanel)
             petView.allowsWindowDragging = false
             configureMenuBarPanel(resetPosition: true)
@@ -197,17 +199,36 @@ final class PetPresentationCoordinator {
 
     private func configureMenuBarPanel(resetPosition: Bool) {
         guard settings.displayMode == .menuBar, let screen = activeScreen(), let pet = currentPet else { return }
-        let thickness = NSStatusBar.system.thickness
-        let desiredHeight = min(CGFloat(pet.presentation.menuBar.height), max(14, thickness - 1))
-        let width = max(desiredHeight, desiredHeight * 1.18)
-        menuBarPanel.setFrame(NSRect(x: menuBarPanel.frame.minX, y: screen.frame.maxY - thickness, width: width, height: thickness), display: true)
+        let geometry = menuBarGeometry(on: screen)
+        let requestedHeight = max(14, CGFloat(pet.presentation.menuBar.height))
+        let panelHeight = (pet.presentation.menuBar.fillsAvailableHeight ?? true) ? geometry.height : min(requestedHeight, geometry.height)
+        let aspect = menuBarAspectRatio(for: pet)
+        let width = max(1, panelHeight * aspect)
+        menuBarPanel.setFrame(NSRect(x: menuBarPanel.frame.minX, y: geometry.bottom, width: width, height: panelHeight), display: true)
         petView.frame = NSRect(origin: .zero, size: menuBarPanel.frame.size)
         scene.size = menuBarPanel.frame.size
         if resetPosition {
             let bounds = horizontalBounds(on: screen)
-            menuBarPanel.setFrameOrigin(NSPoint(x: bounds.lowerBound, y: screen.frame.maxY - thickness))
+            menuBarPanel.setFrameOrigin(NSPoint(x: bounds.lowerBound, y: geometry.bottom))
             direction = 1
         }
+    }
+
+    private func menuBarGeometry(on screen: NSScreen) -> (bottom: CGFloat, height: CGFloat) {
+        let geometry = MenuBarMovementResolver.verticalGeometry(
+            screenMaxY: Double(screen.frame.maxY),
+            visibleFrameMaxY: Double(screen.visibleFrame.maxY),
+            systemThickness: Double(NSStatusBar.system.thickness)
+        )
+        return (CGFloat(geometry.bottom), CGFloat(geometry.height))
+    }
+
+    private func menuBarAspectRatio(for pet: PetDefinition) -> CGFloat {
+        guard let idleName = pet.bindings["defaultIdle"], let idle = pet.animations[idleName], let frame = idle.frames.first,
+              let resolved = try? FrameResolver.resolve(frame: frame, animation: idle, atlases: pet.atlases), resolved.rect.height > 0 else {
+            return 1
+        }
+        return CGFloat(resolved.rect.width) / CGFloat(resolved.rect.height)
     }
 
     private func horizontalBounds(on screen: NSScreen) -> ClosedRange<CGFloat> {
@@ -215,9 +236,14 @@ final class PetPresentationCoordinator {
         let profile = pet.presentation.menuBar
         let left = settings.menuBarRangeMode == .safe ? CGFloat(profile.safeMarginLeft) : 0
         let right = settings.menuBarRangeMode == .safe ? CGFloat(profile.safeMarginRight) : 0
-        let minX = screen.frame.minX + left
-        let maxX = max(minX, screen.frame.maxX - right - menuBarPanel.frame.width)
-        return minX...maxX
+        let bounds = MenuBarMovementResolver.bounds(
+            screenMinX: Double(screen.frame.minX),
+            screenMaxX: Double(screen.frame.maxX),
+            panelWidth: Double(menuBarPanel.frame.width),
+            leftMargin: Double(left),
+            rightMargin: Double(right)
+        )
+        return CGFloat(bounds.lowerBound)...CGFloat(bounds.upperBound)
     }
 
     private func startMenuBarMovement() {
@@ -236,29 +262,44 @@ final class PetPresentationCoordinator {
         previousMovementDate = now
         guard now >= pauseUntil else { return }
 
-        let bounds = horizontalBounds(on: screen)
-        var nextX = menuBarPanel.frame.minX + CGFloat(Double(direction) * pet.presentation.menuBar.speed * delta)
-        var shouldTurn = nextX <= bounds.lowerBound || nextX >= bounds.upperBound
-
-        if pet.presentation.menuBar.avoidNotch {
-            if let leftArea = screen.auxiliaryTopLeftArea, let rightArea = screen.auxiliaryTopRightArea,
-               !leftArea.isEmpty, !rightArea.isEmpty {
-                let notch = NSRect(x: leftArea.maxX, y: screen.frame.maxY - NSStatusBar.system.thickness, width: max(0, rightArea.minX - leftArea.maxX), height: NSStatusBar.system.thickness)
-                let proposed = NSRect(x: nextX, y: menuBarPanel.frame.minY, width: menuBarPanel.frame.width, height: menuBarPanel.frame.height)
-                if proposed.intersects(notch) { shouldTurn = true }
-            }
+        let locomotionName = direction >= 0 ? pet.bindings["moveRight"] : pet.bindings["moveLeft"]
+        guard MenuBarMovementResolver.shouldAdvance(
+            isPerformingBehavior: behaviorEngine.isPerformingBehavior,
+            currentAnimationName: scene.currentAnimationName,
+            locomotionAnimationName: locomotionName
+        ) else {
+            guard !behaviorEngine.isPerformingBehavior else { return }
+            behaviorEngine.playLocomotion(direction: direction)
+            return
         }
 
-        if shouldTurn {
-            direction *= -1
-            nextX = min(max(nextX, bounds.lowerBound), bounds.upperBound)
+        let bounds = horizontalBounds(on: screen)
+        let notch: ClosedRange<Double>? = {
+            guard let leftArea = screen.auxiliaryTopLeftArea, let rightArea = screen.auxiliaryTopRightArea,
+                  !leftArea.isEmpty, !rightArea.isEmpty, rightArea.minX > leftArea.maxX else { return nil }
+            return Double(leftArea.maxX)...Double(rightArea.minX)
+        }()
+        let step = MenuBarMovementResolver.advance(
+            currentX: Double(menuBarPanel.frame.minX),
+            direction: direction,
+            speed: pet.presentation.menuBar.speed,
+            delta: delta,
+            bounds: Double(bounds.lowerBound)...Double(bounds.upperBound),
+            panelWidth: Double(menuBarPanel.frame.width),
+            notch: notch,
+            skipNotch: pet.presentation.menuBar.notchTraversal == .skip
+        )
+        let nextX = CGFloat(step.x)
+
+        if step.direction != direction {
+            direction = step.direction
             behaviorEngine.playLocomotion(direction: direction)
             if let pause = pet.presentation.menuBar.pauseInterval, Double.random(in: 0..<1) < 0.35 {
                 pauseUntil = now.addingTimeInterval(Double.random(in: pause.min...max(pause.min, pause.max)))
                 behaviorEngine.returnToIdle()
             }
         }
-        menuBarPanel.setFrameOrigin(NSPoint(x: nextX, y: screen.frame.maxY - NSStatusBar.system.thickness))
+        menuBarPanel.setFrameOrigin(NSPoint(x: nextX, y: menuBarGeometry(on: screen).bottom))
         behaviorEngine.updateContext("distanceToLeftEdge", value: .number(Double(nextX - bounds.lowerBound)))
         behaviorEngine.updateContext("distanceToRightEdge", value: .number(Double(bounds.upperBound - nextX)))
     }

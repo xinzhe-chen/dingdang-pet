@@ -6,7 +6,9 @@ import Foundation
 final class PetBehaviorEngine {
     private weak var scene: PetScene?
     private var currentTask: Task<Void, Never>?
+    private var behaviorToken = UUID()
     private(set) var context = BehaviorContext()
+    private(set) var isPerformingBehavior = false
     var propertyHandler: ((String, BehaviorValue) -> Void)?
     var rootURL: URL?
 
@@ -21,14 +23,23 @@ final class PetBehaviorEngine {
     func trigger(_ event: String) {
         guard let scene, let pet = scene.pet else { return }
         currentTask?.cancel()
+        let token = UUID()
+        behaviorToken = token
+        isPerformingBehavior = true
         currentTask = Task { [weak self] in
             guard let self else { return }
+            defer {
+                if self.behaviorToken == token {
+                    self.isPerformingBehavior = false
+                    self.currentTask = nil
+                }
+            }
             if let node = pet.behaviors[event] {
                 await self.run(node)
             } else if pet.bindings[event] != nil {
                 await self.playBinding(event)
             }
-            guard !Task.isCancelled else { return }
+            guard !Task.isCancelled, self.behaviorToken == token else { return }
             scene.playIdle()
         }
     }
@@ -37,6 +48,9 @@ final class PetBehaviorEngine {
         let semantic = direction >= 0 ? "moveRight" : "moveLeft"
         guard scene?.currentAnimationName != scene?.pet?.bindings[semantic] else { return }
         currentTask?.cancel()
+        currentTask = nil
+        behaviorToken = UUID()
+        isPerformingBehavior = false
         scene?.playBinding(semantic, forceSingleCycle: false)
     }
 

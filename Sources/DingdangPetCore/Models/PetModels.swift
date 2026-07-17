@@ -231,7 +231,7 @@ public struct PresentationDefinition: Codable, Sendable {
 
     public static let `default` = PresentationDefinition(
         desktop: DisplayProfile(defaultScale: 1, minimumScale: 0.4, maximumScale: 3, height: 208),
-        menuBar: MenuBarProfile(height: 22, speed: 32, safeMarginLeft: 80, safeMarginRight: 220, pauseInterval: ClosedRangeValue(min: 2, max: 7), avoidNotch: true),
+        menuBar: MenuBarProfile(height: 22, fillsAvailableHeight: true, speed: 32, safeMarginLeft: 80, safeMarginRight: 220, pauseInterval: ClosedRangeValue(min: 2, max: 7), avoidNotch: true, notchTraversal: .continuous),
         randomIdleInterval: ClosedRangeValue(min: 8, max: 20)
     )
 
@@ -262,20 +262,29 @@ public struct DisplayProfile: Codable, Sendable {
 
 public struct MenuBarProfile: Codable, Sendable {
     public var height: Double
+    public var fillsAvailableHeight: Bool?
     public var speed: Double
     public var safeMarginLeft: Double
     public var safeMarginRight: Double
     public var pauseInterval: ClosedRangeValue?
     public var avoidNotch: Bool
+    public var notchTraversal: NotchTraversal?
 
-    public init(height: Double, speed: Double, safeMarginLeft: Double, safeMarginRight: Double, pauseInterval: ClosedRangeValue? = nil, avoidNotch: Bool = true) {
+    public init(height: Double, fillsAvailableHeight: Bool? = nil, speed: Double, safeMarginLeft: Double, safeMarginRight: Double, pauseInterval: ClosedRangeValue? = nil, avoidNotch: Bool = true, notchTraversal: NotchTraversal? = nil) {
         self.height = height
+        self.fillsAvailableHeight = fillsAvailableHeight
         self.speed = speed
         self.safeMarginLeft = safeMarginLeft
         self.safeMarginRight = safeMarginRight
         self.pauseInterval = pauseInterval
         self.avoidNotch = avoidNotch
+        self.notchTraversal = notchTraversal
     }
+}
+
+public enum NotchTraversal: String, Codable, Sendable {
+    case continuous
+    case skip
 }
 
 public struct ClosedRangeValue: Codable, Sendable {

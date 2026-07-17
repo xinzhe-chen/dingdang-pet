@@ -113,6 +113,117 @@ final class PetCoreTests: XCTestCase {
         XCTAssertThrowsError(try ArchiveEntryValidator.validate([]))
         XCTAssertThrowsError(try ArchiveEntryValidator.validate(["a", "b"], maximumFiles: 1))
     }
+
+    func testMenuBarBoundsReachBothSides() {
+        let bounds = MenuBarMovementResolver.bounds(
+            screenMinX: 0,
+            screenMaxX: 1_440,
+            panelWidth: 24,
+            leftMargin: 90,
+            rightMargin: 230
+        )
+        XCTAssertEqual(bounds.lowerBound, 90)
+        XCTAssertEqual(bounds.upperBound, 1_186)
+    }
+
+    func testMenuBarVerticalGeometryUsesActualReservedHeightAndStaysOnScreen() {
+        XCTAssertEqual(
+            MenuBarMovementResolver.verticalGeometry(
+                screenMaxY: 956,
+                visibleFrameMaxY: 923,
+                systemThickness: 22
+            ),
+            MenuBarVerticalGeometry(bottom: 923, height: 33)
+        )
+        XCTAssertEqual(
+            MenuBarMovementResolver.verticalGeometry(
+                screenMaxY: 956,
+                visibleFrameMaxY: 956,
+                systemThickness: 22
+            ),
+            MenuBarVerticalGeometry(bottom: 934, height: 22)
+        )
+    }
+
+    func testMenuBarMovementCrossesNotchContinuouslyWithoutTurningAround() {
+        let right = MenuBarMovementResolver.advance(
+            currentX: 674,
+            direction: 1,
+            speed: 40,
+            delta: 0.1,
+            bounds: 90...1_186,
+            panelWidth: 24,
+            notch: 700...740
+        )
+        XCTAssertEqual(right.x, 678)
+        XCTAssertEqual(right.direction, 1)
+        XCTAssertFalse(right.crossedNotch)
+
+        let left = MenuBarMovementResolver.advance(
+            currentX: 742,
+            direction: -1,
+            speed: 40,
+            delta: 0.1,
+            bounds: 90...1_186,
+            panelWidth: 24,
+            notch: 700...740
+        )
+        XCTAssertEqual(left.x, 738)
+        XCTAssertEqual(left.direction, -1)
+        XCTAssertFalse(left.crossedNotch)
+    }
+
+    func testMenuBarNotchSkipRemainsExplicitlyConfigurable() {
+        let step = MenuBarMovementResolver.advance(
+            currentX: 674,
+            direction: 1,
+            speed: 40,
+            delta: 0.1,
+            bounds: 90...1_186,
+            panelWidth: 24,
+            notch: 700...740,
+            skipNotch: true
+        )
+        XCTAssertEqual(step.x, 740)
+        XCTAssertTrue(step.crossedNotch)
+    }
+
+    func testMenuBarMovementTurnsOnlyAtOuterBoundary() {
+        let step = MenuBarMovementResolver.advance(
+            currentX: 1_185,
+            direction: 1,
+            speed: 40,
+            delta: 0.1,
+            bounds: 90...1_186,
+            panelWidth: 24
+        )
+        XCTAssertEqual(step.x, 1_186)
+        XCTAssertEqual(step.direction, -1)
+        XCTAssertTrue(step.reachedBoundary)
+    }
+
+    func testMenuBarAdvancesOnlyDuringMatchingLocomotion() {
+        XCTAssertTrue(MenuBarMovementResolver.shouldAdvance(
+            isPerformingBehavior: false,
+            currentAnimationName: "running-right",
+            locomotionAnimationName: "running-right"
+        ))
+        XCTAssertFalse(MenuBarMovementResolver.shouldAdvance(
+            isPerformingBehavior: false,
+            currentAnimationName: "idle",
+            locomotionAnimationName: "running-right"
+        ))
+        XCTAssertFalse(MenuBarMovementResolver.shouldAdvance(
+            isPerformingBehavior: false,
+            currentAnimationName: "running-left",
+            locomotionAnimationName: "running-right"
+        ))
+        XCTAssertFalse(MenuBarMovementResolver.shouldAdvance(
+            isPerformingBehavior: true,
+            currentAnimationName: "running-right",
+            locomotionAnimationName: "running-right"
+        ))
+    }
 }
 
 import CryptoKit

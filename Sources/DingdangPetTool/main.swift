@@ -124,15 +124,15 @@ struct DingdangPetTool {
         }
 
         let definitions: [(String, Int, [Int], Bool)] = [
-            ("idle", 0, [280, 110, 110, 140, 140, 320], true),
+            ("idle", 0, [420, 180, 180, 220, 220, 520], true),
             ("running-right", 1, [120, 120, 120, 120, 120, 120, 120, 220], true),
             ("running-left", 2, [120, 120, 120, 120, 120, 120, 120, 220], true),
-            ("waving", 3, [140, 140, 140, 280], false),
-            ("jumping", 4, [140, 140, 140, 140, 280], false),
-            ("failed", 5, [140, 140, 140, 140, 140, 140, 140, 240], false),
-            ("waiting", 6, [150, 150, 150, 150, 150, 260], true),
+            ("waving", 3, [240, 240, 240, 520], false),
+            ("jumping", 4, [220, 220, 220, 220, 500], false),
+            ("failed", 5, [240, 240, 240, 240, 240, 240, 240, 520], false),
+            ("waiting", 6, [260, 260, 260, 260, 260, 560], true),
             ("running", 7, [120, 120, 120, 120, 120, 220], true),
-            ("review", 8, [150, 150, 150, 150, 150, 280], true)
+            ("review", 8, [260, 260, 260, 260, 260, 560], true)
         ]
         var animations = Dictionary(uniqueKeysWithValues: definitions.map { name, row, durations, loop in
             (name, AnimationDefinition(frames: frames(row: row, durations: durations), loop: loop))
@@ -184,16 +184,18 @@ struct DingdangPetTool {
                 ]),
                 "longPress": BehaviorNode(type: .play, animation: "waiting"),
                 "randomIdle": BehaviorNode(type: .random, choices: [
-                    WeightedBehavior(weight: 45, run: BehaviorNode(type: .play, animation: "waving")),
-                    WeightedBehavior(weight: 30, run: BehaviorNode(type: .play, animation: "review")),
-                    WeightedBehavior(weight: 25, run: BehaviorNode(type: .play, animation: "running"))
+                    WeightedBehavior(weight: 25, run: BehaviorNode(type: .play, animation: "waving")),
+                    WeightedBehavior(weight: 20, run: BehaviorNode(type: .play, animation: "jumping")),
+                    WeightedBehavior(weight: 20, run: BehaviorNode(type: .play, animation: "waiting")),
+                    WeightedBehavior(weight: 20, run: BehaviorNode(type: .play, animation: "review")),
+                    WeightedBehavior(weight: 15, run: BehaviorNode(type: .play, animation: "failed"))
                 ])
             ],
             directionalLook: DirectionalLookDefinition(enabled: true, deadzoneRadius: 90, selection: "nearest-angle", angles: lookAngles),
             presentation: PresentationDefinition(
                 desktop: DisplayProfile(defaultScale: 0.55, minimumScale: 0.2, maximumScale: 2.5, height: 208, anchorX: 0.5, anchorY: 0.05),
-                menuBar: MenuBarProfile(height: 22, speed: 34, safeMarginLeft: 90, safeMarginRight: 230, pauseInterval: ClosedRangeValue(min: 1.5, max: 5), avoidNotch: true),
-                randomIdleInterval: ClosedRangeValue(min: 9, max: 24)
+                menuBar: MenuBarProfile(height: 22, fillsAvailableHeight: true, speed: 54, safeMarginLeft: 90, safeMarginRight: 230, pauseInterval: ClosedRangeValue(min: 3, max: 8), avoidNotch: true, notchTraversal: .continuous),
+                randomIdleInterval: ClosedRangeValue(min: 16, max: 36)
             )
         )
         return PetCatalog(schemaVersion: 1, catalogVersion: version, defaultPetID: petID, pets: [pet])

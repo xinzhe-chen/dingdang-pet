@@ -10,6 +10,7 @@ final class PetScene: SKScene {
     private(set) var currentAnimationName: String?
     private var rootURL: URL?
     private var animationToken = UUID()
+    private var contentInset: CGFloat = 2
 
     override init(size: CGSize) {
         super.init(size: size)
@@ -108,6 +109,11 @@ final class PetScene: SKScene {
         playIdle()
     }
 
+    func setContentInset(_ value: CGFloat) {
+        contentInset = max(0, value)
+        layoutSprite()
+    }
+
     private func layoutSprite() {
         sprite.position = .zero
         if let texture = sprite.texture { fitSprite(texture: texture) }
@@ -116,8 +122,7 @@ final class PetScene: SKScene {
     private func fitSprite(texture: SKTexture) {
         let textureSize = texture.size()
         guard textureSize.width > 0, textureSize.height > 0 else { return }
-        let inset: CGFloat = 2
-        let available = CGSize(width: max(1, size.width - inset * 2), height: max(1, size.height - inset * 2))
+        let available = CGSize(width: max(1, size.width - contentInset * 2), height: max(1, size.height - contentInset * 2))
         let factor = min(available.width / textureSize.width, available.height / textureSize.height)
         sprite.size = CGSize(width: textureSize.width * factor, height: textureSize.height * factor)
     }

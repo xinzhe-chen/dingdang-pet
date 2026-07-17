@@ -1,5 +1,5 @@
 {
-  "catalogVersion" : "1.1.0",
+  "catalogVersion" : "1.2.0",
   "defaultPetID" : "dingdang",
   "pets" : [
     {
@@ -9,49 +9,49 @@
             {
               "atlas" : "main",
               "column" : 0,
-              "durationMs" : 140,
+              "durationMs" : 240,
               "row" : 5
             },
             {
               "atlas" : "main",
               "column" : 1,
-              "durationMs" : 140,
+              "durationMs" : 240,
               "row" : 5
             },
             {
               "atlas" : "main",
               "column" : 2,
-              "durationMs" : 140,
+              "durationMs" : 240,
               "row" : 5
             },
             {
               "atlas" : "main",
               "column" : 3,
-              "durationMs" : 140,
+              "durationMs" : 240,
               "row" : 5
             },
             {
               "atlas" : "main",
               "column" : 4,
-              "durationMs" : 140,
+              "durationMs" : 240,
               "row" : 5
             },
             {
               "atlas" : "main",
               "column" : 5,
-              "durationMs" : 140,
+              "durationMs" : 240,
               "row" : 5
             },
             {
               "atlas" : "main",
               "column" : 6,
-              "durationMs" : 140,
+              "durationMs" : 240,
               "row" : 5
             },
             {
               "atlas" : "main",
               "column" : 7,
-              "durationMs" : 240,
+              "durationMs" : 520,
               "row" : 5
             }
           ],
@@ -62,37 +62,37 @@
             {
               "atlas" : "main",
               "column" : 0,
-              "durationMs" : 280,
+              "durationMs" : 420,
               "row" : 0
             },
             {
               "atlas" : "main",
               "column" : 1,
-              "durationMs" : 110,
+              "durationMs" : 180,
               "row" : 0
             },
             {
               "atlas" : "main",
               "column" : 2,
-              "durationMs" : 110,
+              "durationMs" : 180,
               "row" : 0
             },
             {
               "atlas" : "main",
               "column" : 3,
-              "durationMs" : 140,
+              "durationMs" : 220,
               "row" : 0
             },
             {
               "atlas" : "main",
               "column" : 4,
-              "durationMs" : 140,
+              "durationMs" : 220,
               "row" : 0
             },
             {
               "atlas" : "main",
               "column" : 5,
-              "durationMs" : 320,
+              "durationMs" : 520,
               "row" : 0
             }
           ],
@@ -103,31 +103,31 @@
             {
               "atlas" : "main",
               "column" : 0,
-              "durationMs" : 140,
+              "durationMs" : 220,
               "row" : 4
             },
             {
               "atlas" : "main",
               "column" : 1,
-              "durationMs" : 140,
+              "durationMs" : 220,
               "row" : 4
             },
             {
               "atlas" : "main",
               "column" : 2,
-              "durationMs" : 140,
+              "durationMs" : 220,
               "row" : 4
             },
             {
               "atlas" : "main",
               "column" : 3,
-              "durationMs" : 140,
+              "durationMs" : 220,
               "row" : 4
             },
             {
               "atlas" : "main",
               "column" : 4,
-              "durationMs" : 280,
+              "durationMs" : 500,
               "row" : 4
             }
           ],
@@ -298,37 +298,37 @@
             {
               "atlas" : "main",
               "column" : 0,
-              "durationMs" : 150,
+              "durationMs" : 260,
               "row" : 8
             },
             {
               "atlas" : "main",
               "column" : 1,
-              "durationMs" : 150,
+              "durationMs" : 260,
               "row" : 8
             },
             {
               "atlas" : "main",
               "column" : 2,
-              "durationMs" : 150,
+              "durationMs" : 260,
               "row" : 8
             },
             {
               "atlas" : "main",
               "column" : 3,
-              "durationMs" : 150,
+              "durationMs" : 260,
               "row" : 8
             },
             {
               "atlas" : "main",
               "column" : 4,
-              "durationMs" : 150,
+              "durationMs" : 260,
               "row" : 8
             },
             {
               "atlas" : "main",
               "column" : 5,
-              "durationMs" : 280,
+              "durationMs" : 560,
               "row" : 8
             }
           ],
@@ -486,37 +486,37 @@
             {
               "atlas" : "main",
               "column" : 0,
-              "durationMs" : 150,
+              "durationMs" : 260,
               "row" : 6
             },
             {
               "atlas" : "main",
               "column" : 1,
-              "durationMs" : 150,
+              "durationMs" : 260,
               "row" : 6
             },
             {
               "atlas" : "main",
               "column" : 2,
-              "durationMs" : 150,
+              "durationMs" : 260,
               "row" : 6
             },
             {
               "atlas" : "main",
               "column" : 3,
-              "durationMs" : 150,
+              "durationMs" : 260,
               "row" : 6
             },
             {
               "atlas" : "main",
               "column" : 4,
-              "durationMs" : 150,
+              "durationMs" : 260,
               "row" : 6
             },
             {
               "atlas" : "main",
               "column" : 5,
-              "durationMs" : 260,
+              "durationMs" : 560,
               "row" : 6
             }
           ],
@@ -527,25 +527,25 @@
             {
               "atlas" : "main",
               "column" : 0,
-              "durationMs" : 140,
+              "durationMs" : 240,
               "row" : 3
             },
             {
               "atlas" : "main",
               "column" : 1,
-              "durationMs" : 140,
+              "durationMs" : 240,
               "row" : 3
             },
             {
               "atlas" : "main",
               "column" : 2,
-              "durationMs" : 140,
+              "durationMs" : 240,
               "row" : 3
             },
             {
               "atlas" : "main",
               "column" : 3,
-              "durationMs" : 280,
+              "durationMs" : 520,
               "row" : 3
             }
           ],
@@ -600,21 +600,35 @@
                 "animation" : "waving",
                 "type" : "play"
               },
-              "weight" : 45
+              "weight" : 25
+            },
+            {
+              "run" : {
+                "animation" : "jumping",
+                "type" : "play"
+              },
+              "weight" : 20
+            },
+            {
+              "run" : {
+                "animation" : "waiting",
+                "type" : "play"
+              },
+              "weight" : 20
             },
             {
               "run" : {
                 "animation" : "review",
                 "type" : "play"
               },
-              "weight" : 30
+              "weight" : 20
             },
             {
               "run" : {
-                "animation" : "running",
+                "animation" : "failed",
                 "type" : "play"
               },
-              "weight" : 25
+              "weight" : 15
             }
           ],
           "type" : "random"
@@ -731,18 +745,20 @@
         },
         "menuBar" : {
           "avoidNotch" : true,
+          "fillsAvailableHeight" : true,
           "height" : 22,
+          "notchTraversal" : "continuous",
           "pauseInterval" : {
-            "max" : 5,
-            "min" : 1.5
+            "max" : 8,
+            "min" : 3
           },
           "safeMarginLeft" : 90,
           "safeMarginRight" : 230,
-          "speed" : 34
+          "speed" : 54
         },
         "randomIdleInterval" : {
-          "max" : 24,
-          "min" : 9
+          "max" : 36,
+          "min" : 16
         }
       },
       "requiredCapabilities" : [
@@ -751,7 +767,7 @@
         "pointer-look",
         "behavior-graph"
       ],
-      "version" : "1.1.0"
+      "version" : "1.2.0"
     }
   ],
   "schemaVersion" : 1
