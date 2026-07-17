@@ -25,7 +25,7 @@
 | App 签名 | `codesign --verify --deep --strict` | ad-hoc Hardened Runtime 构建验证通过 |
 | 开发 DMG | `scripts/package-development-dmg.sh` 后执行 `hdiutil verify`、只读挂载、版本/资源/签名检查 | 7,594,481 bytes；SHA-256 `fc01607d7790f3df2d6d837554a089750474d3059b98cdd3f0788af56a4c9031`；DMG 内 App/catalog/图集与白底图标均为最新版 |
 | 远端 DMG | 上传 GitHub 后重新下载并与本地 `cmp` | 逐字节一致；Release asset digest 与本地 SHA-256 一致 |
-| GitHub | public repo、main push、`pets-v1.4.1` Release 与四个资产 | 白底图标版 DMG 已覆盖发布并远端回下载逐字节验证；Actions run `29572420548` 成功 |
+| GitHub | public repo、main push、`pets-v1.4.1` Release 与四个资产 | 首次菜单栏修复版 DMG 已覆盖发布并远端回下载逐字节验证；Actions run `29573578961` 成功 |
 | Developer ID / 公证 | `security find-identity -v -p codesigning` | 当前机器 0 个有效身份；脚本已准备，但无法在没有 Apple 证书的情况下伪造公证结果 |
 
 ## GUI 回归
