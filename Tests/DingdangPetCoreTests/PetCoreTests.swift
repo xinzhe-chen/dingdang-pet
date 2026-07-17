@@ -124,6 +124,16 @@ final class PetCoreTests: XCTestCase {
         )
         XCTAssertEqual(bounds.lowerBound, 90)
         XCTAssertEqual(bounds.upperBound, 1_186)
+
+        let fullBounds = MenuBarMovementResolver.bounds(
+            screenMinX: 0,
+            screenMaxX: 1_440,
+            panelWidth: 24,
+            leftMargin: 0,
+            rightMargin: 0
+        )
+        XCTAssertEqual(fullBounds, 0...1_416)
+        XCTAssertLessThan(bounds.upperBound - bounds.lowerBound, fullBounds.upperBound - fullBounds.lowerBound)
     }
 
     func testMenuBarVerticalGeometryUsesActualReservedHeightAndStaysOnScreen() {

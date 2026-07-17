@@ -160,9 +160,9 @@ final class PetPresentationCoordinator {
         settings.$showOnAllSpaces.dropFirst().sink { [weak self] enabled in
             self?.desktopPanel.collectionBehavior = enabled ? [.canJoinAllSpaces, .fullScreenAuxiliary, .stationary] : [.fullScreenAuxiliary]
         }.store(in: &cancellables)
-        settings.$menuBarRangeMode.dropFirst().sink { [weak self] _ in
-            self?.configureMenuBarPanel(resetPosition: false)
-            self?.showMenuBarRangePreview()
+        settings.$menuBarRangeMode.dropFirst().sink { [weak self] mode in
+            self?.configureMenuBarPanel(resetPosition: false, rangeMode: mode)
+            self?.showMenuBarRangePreview(rangeMode: mode)
         }.store(in: &cancellables)
         settings.$selectedPetID.dropFirst().sink { [weak self] _ in self?.reloadPet() }.store(in: &cancellables)
         catalogStore.$catalog.dropFirst().sink { [weak self] _ in self?.reloadPet() }.store(in: &cancellables)
@@ -212,11 +212,11 @@ final class PetPresentationCoordinator {
         return NSScreen.screens.first(where: { $0.frame.contains(point) }) ?? NSScreen.main
     }
 
-    private func configureMenuBarPanel(resetPosition: Bool) {
+    private func configureMenuBarPanel(resetPosition: Bool, rangeMode: MenuBarRangeMode? = nil) {
         guard settings.displayMode == .menuBar, let screen = activeScreen(), let pet = currentPet else { return }
         let geometry = menuBarGeometry(on: screen)
         let size = menuBarPanelSize(on: screen, for: pet)
-        let bounds = horizontalBounds(on: screen, panelWidth: size.width)
+        let bounds = horizontalBounds(on: screen, panelWidth: size.width, rangeMode: rangeMode)
         let x = resetPosition ? bounds.lowerBound : min(max(menuBarPanel.frame.minX, bounds.lowerBound), bounds.upperBound)
         menuBarPanel.setFrame(NSRect(x: x, y: geometry.bottom, width: size.width, height: size.height), display: true)
         petView.frame = NSRect(origin: .zero, size: menuBarPanel.frame.size)
@@ -250,11 +250,16 @@ final class PetPresentationCoordinator {
         return CGFloat(resolved.rect.width) / CGFloat(resolved.rect.height)
     }
 
-    private func horizontalBounds(on screen: NSScreen, panelWidth: CGFloat? = nil) -> ClosedRange<CGFloat> {
+    private func horizontalBounds(
+        on screen: NSScreen,
+        panelWidth: CGFloat? = nil,
+        rangeMode: MenuBarRangeMode? = nil
+    ) -> ClosedRange<CGFloat> {
         guard let pet = currentPet else { return screen.frame.minX...(screen.frame.maxX - (panelWidth ?? menuBarPanel.frame.width)) }
         let profile = pet.presentation.menuBar
-        let left = settings.menuBarRangeMode == .safe ? CGFloat(profile.safeMarginLeft) : 0
-        let right = settings.menuBarRangeMode == .safe ? CGFloat(profile.safeMarginRight) : 0
+        let resolvedMode = rangeMode ?? settings.menuBarRangeMode
+        let left = resolvedMode == .safe ? CGFloat(profile.safeMarginLeft) : 0
+        let right = resolvedMode == .safe ? CGFloat(profile.safeMarginRight) : 0
         let resolvedPanelWidth = panelWidth ?? menuBarPanel.frame.width
         let bounds = MenuBarMovementResolver.bounds(
             screenMinX: Double(screen.frame.minX),
@@ -266,11 +271,11 @@ final class PetPresentationCoordinator {
         return CGFloat(bounds.lowerBound)...CGFloat(bounds.upperBound)
     }
 
-    private func showMenuBarRangePreview() {
+    private func showMenuBarRangePreview(rangeMode: MenuBarRangeMode? = nil) {
         guard let screen = activeScreen(), let pet = currentPet else { return }
         let geometry = menuBarGeometry(on: screen)
         let petSize = menuBarPanelSize(on: screen, for: pet)
-        let bounds = horizontalBounds(on: screen, panelWidth: petSize.width)
+        let bounds = horizontalBounds(on: screen, panelWidth: petSize.width, rangeMode: rangeMode)
         let width = max(1, bounds.upperBound - bounds.lowerBound + petSize.width)
         rangePreviewPanel.setFrame(
             NSRect(x: bounds.lowerBound, y: geometry.bottom, width: width, height: geometry.height),
