@@ -2,6 +2,8 @@
 
 Dingdang Pet 是一个独立运行的原生 macOS 桌面宠物。App 本身是固定的通用运行时；宠物外观、atlas 几何、动画、行为图、菜单栏速度和大部分展示参数都从签名的 GitHub Release 资源加载。
 
+当前内置资源和 [pets-v1.1.0](https://github.com/xinzhe-chen/dingdang-pet/releases/tag/pets-v1.1.0) 均使用 Codex 中的银渐层「叮当」原始 v2 WebP 图集，而不是早期的紫色示例猫。
+
 ## 已实现
 
 - 桌面透明悬浮、拖动、滚轮/触控板缩放和位置记忆
